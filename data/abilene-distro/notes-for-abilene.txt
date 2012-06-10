@@ -1,0 +1,10 @@
+Abilene Data (3 weeks, 121 OD flows, 5 minute bins) as a matlab file.
+
+You'll find the timeseries matrices, X1,  X2, X3,  which have the OD flow
+bytecount timeseries for each week.   There is a variable called odnames,
+which has the names of the OD pairs.  And finally, you will find three vectors, utc1, utc2, and utc3, which contain the exact UTC time (in seconds) associated with each row of X.   
+
+The Abilene data was collected from December 8,
+2003 to December 28, 2003.  (The exact measurement start and stop times are in the utc variables.)
+
+

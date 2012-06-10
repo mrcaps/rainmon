@@ -1,0 +1,9 @@
+{
+	"rrddir": "/home/bigubuntu/rrd",
+	"tsdbhost": "kmonitor.cloud.pdl.cmu.local",
+	"tsdbport": "4242",
+    "tmpdir": "../../etc/tmp",
+    "resultsdir": "../../etc/results",
+    "datadir": "../../data",
+    "externaldata": "../../../826-data/data"
+}

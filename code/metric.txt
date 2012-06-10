@@ -1,0 +1,14 @@
+iostat.disk.read_sectors
+iostat.disk.write_requests
+iostat.disk.write_sectors
+proc.meminfo.buffers
+proc.meminfo.cached
+proc.stat.cpu,type.system
+proc.stat.cpu,type.user
+proc.stat.cpu,type.iowait
+proc.stat.cpu,type.nice
+proc.net.bytes,direction.in
+proc.net.bytes,direction.out
+proc.net.packets,direction.in
+proc.net.packets,direction.out
+proc.stat.intr

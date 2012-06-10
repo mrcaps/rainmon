@@ -1,0 +1,8 @@
+{
+	"rrddir": "LOCATION_OF_RRD_DATAFILES",
+	"tsdbhost": "TIMESERIES_DATABASE_HOST",
+	"tsdbport": "TIMESERIES_DATABASE_PORT",
+    "datadir": "../../data",
+    "tmpdir": "../../etc/tmp",
+    "resultsdir": "../../etc/results"
+}

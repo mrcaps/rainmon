@@ -1,0 +1,25 @@
+iostat.disk.msec\_read& 0.93429\\
+ iostat.disk.msec\_write& 0.93429\\
+ iostat.disk.read\_requests& 0.85695\\
+ iostat.disk.read\_sectors& 0.8413\\
+ iostat.disk.write\_requests& 0.93131\\
+ iostat.disk.write\_sectors& 0.93131\\
+ net.sockstat.memory.type.tcp& 0.94579\\
+ net.sockstat.num\_sockets.type.tcp& 0.9151\\
+ proc.loadavg.runnable& 0.86363\\
+ proc.loadavg.total\_threads& 0.90048\\
+ proc.meminfo.buffers& 0.93047\\
+ proc.meminfo.cached& 0.94579\\
+ proc.meminfo.memfree& 0.92905\\
+ proc.meminfo.memtotal& 0.87359\\
+ proc.net.bytes.direction.in& 0.94579\\
+ proc.net.bytes.direction.out& 0.94579\\
+ proc.net.packets.direction.in& 0.94579\\
+ proc.net.packets.direction.out& 0.94579\\
+ proc.stat.cpu.type.iowait& 0.92905\\
+ proc.stat.cpu.type.nice& 0.87359\\
+ proc.stat.cpu.type.system& 0.92905\\
+ proc.stat.cpu.type.user& 0.92905\\
+ proc.stat.ctxt& 0.94579\\
+ proc.stat.intr& 0.88092\\
+ proc.stat.procs\_blocked& 0.91144\\

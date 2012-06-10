@@ -1,0 +1,108 @@
+html, body {
+	background-color: #C3E8F8;
+	font-family: 'Ubuntu', sans-serif;
+}
+html {
+	height: 100%;
+}
+body {
+	min-height: 100%;
+	margin: 0;
+	background: url('../img/pagebg.jpg') center top no-repeat;
+}
+
+ul {
+	margin-top: 2px;
+	margin-bottom: 2px;
+}
+
+a {
+	color: #2779AA;
+	text-decoration: none;
+}
+a:hover {
+	text-decoration: underline;
+}
+p {
+	margin-top: 0;
+}
+
+#navbar {
+	position: fixed;
+	background: #fff;
+	left: 0px; top: 0px; right: 0px;
+	margin: 0; 
+	padding: 5px 0 8px 0;
+	box-shadow: 0px 0px 30px #3BAAE3;
+	opacity: 0.9;
+	border-bottom: 1px solid #aaa;
+	text-align: center;
+	font-size: 150%;
+	font-weight: bold;
+}
+#navbar>li {
+	display: inline;
+	text-align: left;
+	margin: 0 45px 0 45px;
+}
+#navbar>li a {
+	text-decoration: none;
+}
+#navbar>li a:hover {
+	text-shadow: #fff 0px 0px 4px,#fff 0px 0px 4px,#fff 0px 0px 4px,
+		#3BAAE3 0px 0px 12px, #3BAAE3 0px 0px 12px;
+}
+#content {
+	margin: auto;
+	width: 800px;
+}
+
+.section {
+	position: relative;
+	border-top: 1px dotted #fff;
+	padding: 15px 20px 10px 160px;
+}
+.section .title {
+	position: absolute;
+	color: black;
+	opacity: 0.6;
+	font-weight: bold;
+	margin-top: -80px;
+	padding-top: 80px;
+	font-size: 40px;
+	text-align: right;
+	width: 140px;
+	left: 0px;
+}
+
+.subtitle {
+	text-align: center;
+	font-size: 35px;
+	padding: 0px 40px 0px 40px;
+}
+.reference {
+	font-size: 0.75em;	
+}
+
+.bigtext {
+	font-size: 3em;
+	font-weight: bold;
+}
+
+.snapimg, .snapimgf {
+	position: absolute;
+	z-index: 0;
+	box-shadow: 0px 0px 15px #fff, 0px 0px 15px #fff;
+}
+.snapimg:hover {
+	z-index: 100;
+	box-shadow: 0px 0px 30px #fff, 0px 0px 30px #fff, 0px 0px 30px #fff;
+}
+#clip-title {
+	position: absolute;
+	background: #fff;
+	font-size: 1.2em;
+	padding: 15px 10px 10px 15px;
+	opacity: 0.9;
+	z-index: 50;
+}

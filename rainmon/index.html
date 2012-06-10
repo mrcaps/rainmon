@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>RainMon</title>
+	<meta name="description" content="End-to-end system for mining timeseries monitoring data"/>
+	<meta name="keywords" content="datacenter,monitoring,cloud,data mining,KDD"/>
+	<link rel="stylesheet" href="css/styles.css" type="text/css"/>
+
+	<link href='http://fonts.googleapis.com/css?family=Ubuntu' rel='stylesheet' type='text/css'>
+	
+	<link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
+
+	<script src="http://code.jquery.com/jquery-1.7.1.min.js"></script>
+	<script src="css/jquery.csstransform.pack.js"></script>
+	<script>
+	var tipImg = function(el, rot, scale) {
+		var title = $(el).attr("title");
+		$(el).removeAttr("title");
+		$(el).css({
+			"rotate": rot,
+			"scale": scale
+		}).hover(function(evt) {
+			$(this).delay(200).animate({"scale":1,"rotate":0});
+			$("#clip-title").css({
+				"left": $(this).css("left"),
+				"top": parseInt($(this).css("top")) + $(this).height(),
+				"width": $(this).width() - 24
+			}).text(title)
+			.animate({"opacity":0.9});
+		}, function(evt) {
+			$(this).delay(200).animate({"scale":scale,"rotate":rot});
+			$("#clip-title").css({"opacity":0});
+		});
+	}
+
+	$(document).ready(function() {
+		//smooth scroll to anchors
+		$("#navbar a[href*=#]").click(function(evt){		
+			evt.preventDefault();
+			var target = $("[name=" + this.hash.slice(1) + "]");
+			$("html,body").animate({scrollTop:$(target).offset().top}, 500);
+			return false;
+		});
+
+		$(document).scroll(function(evt) {
+			var stop = $("body").scrollTop();
+			var offs = Math.max(0, stop/2);
+			var wd2 = Math.floor(($("body").width()-1280)/2);
+			$("body").css({
+				backgroundPosition:wd2 + "px " + offs + "px"
+			});
+		});
+
+		$("#clip-title").css({"opacity":0});
+		tipImg("#img-anomplot","-15deg",0.8);
+		tipImg("#img-hiddenvar","5deg",0.8);
+		tipImg("#img-drilldown","5deg",0.8);
+		tipImg("#img-uiheatmap","0deg",0.9);
+	});
+	</script>
+</head>
+<body>
+
+
+<div id="content">
+	<div style="margin-top:20px">
+		<img src="img/rainlogo-title.png" alt="RainMon" />
+	</div>
+	<div class="subtitle">
+		Condensing Timeseries Monitoring Data
+	</div>
+
+	<br/><br/>
+
+	<div class="section">
+		<a class="title" name="clips">Clips</a>
+		<div style="position:relative;height:400px;">
+			<img id="img-heatmap2" class="snapimgf" src="img/ui2heatmap-trim.png" style="left:10px;top:220px" />			
+			<img id="img-anomplot" class="snapimg" src="img/dots-analysis-uiscatter.png" style="top:0px;left:-100px" title="Identify anomalous machines with a single scatterplot" />
+			<img id="img-hiddenvar" class="snapimg" src="img/uihiddenvar.png" style="left:120px;top:20px" title="Get a picture of overall cluster trends with hidden variables mined from monitoring data" />
+			<img id="img-drilldown" class="snapimg" src="img/cloud11-ui2drilldown.png" style="left:80px;top:120px" title="Drill down to individual machines and compare metrics with custom zoomable plots" />
+			<img id="img-uiheatmap" class="snapimg" src="img/uiheatmap.png" style="left:150px;top:280px" title="Get a snapshot of activity across machines with a heatmap that is linked to the timeseries plots" />
+			<div id="clip-title">
+
+			</div>
+		</div>
+	</div>
+
+	<div class="section">
+		<a class="title" name="about">About</a>
+		<div>
+<p>
+Timeseries data are prevalent in large-scale computing centers. Systems often capture sampled metrics of performance, utilization, and even sensor data like temperature. These streams are used for monitoring, placement, optimization, and more.
+</p>
+<p style="margin-bottom:0">
+RainMon is a framework to manage massive data-center timeseries streams that are lengthy and bursty in nature. It uses a multi-stage modeling approach. In the first phase, the incoming data streams are decomposed into "smooth" and "spiky" components. In the second phase, the streams are summarized into a set that can be visualized and understood. In the third phase, predictions are made about the future state of the system. Such a framework provides the potential to address a number of practical advances for data center efficiency:
+</p>
+<ul>
+<li>Detecting potential anomalies or alert conditions. Dramatic changes in model parameters can be predictors of problems or abnormalities.</li>
+<li>Reduce the storage requirement of streams through compression. By storing only the model parameters and occasional original data points, potentially large timeseries data can be effectively summarized.</li>
+<li>Improve alerting and placement algorithms by predicting future usage. Even a short-term view of future usage can be valuable for decision-making. By playing the model forward, we can obtain this data.</li>
+</ul>
+<p>
+The framework incorporates several existing algorithms from the literature including Cypress<sup>1</sup>, SPIRIT<sup>2</sup> and Kalman filters<sup>3</sup>. RainMon has been applied to large data streams collected from production clusters to detect real anomalies.
+</p>
+<p>
+<div class="reference">[1] Galen Reeves, Jie Liu, Suman Nath, and Feng Zhao. Cypress: Managing Massive Time Series Streams with Multi-Scale Compressed Trickles. In Proc. VLDB'09, pages 97-108.</div>
+<div class="reference">[2] Spiros Papadimitriou, Jimeng Sun, and Christos Faloutsos. Streaming pattern discovery in multiple time-series. In Proc. VLDB'05, pages 697-708.</div>
+<div class="reference">[3] Sam Roweis and Zoubin Ghahramani. A Unifying Review of Linear Gaussian Models. Neural Computation, 11(2):305-345, February 1999.</div>
+</p>
+
+		</div>
+	</div>
+
+	<div class="section">
+		<a class="title" name="demo">Demo</a>
+		<p>
+			<span class="bigtext"><a href="rain">Click here</a> for a demo</span>
+		</p>
+		<p>
+			The demonstration provided above is an example of the output of RainMon after an analysis has been run.
+		</p>
+	</div>
+
+	<div class="section">
+		<a class="title" name="source">Source</a>
+		<p>
+			RainMon is hosted on github. The tool is open-source and available under a BSD license. Additionally, we are providing the CMU.net dataset described in the KDD 2012 paper to the community (see the <tt>data</tt> directory). See <tt>README.md</tt> for additional information.
+		</p>
+		<p>
+			<table>
+			<tr><td><img src="img/github-logo.png" alt="github"  style="vertical-align: middle"/></td>
+			<td class="bigtext" style="padding-left:30px;"><a href="https://github.com/mrcaps/826" target="_blank">Download RainMon</a>
+			</td></tr>
+			</table>
+		</p>
+	</div>
+
+	<div class="section">
+		The RainMon team is:
+		<ul>
+			<li>Ilari Shafer</li>
+			<li>Kai Ren</li>
+			<li>Vishnu Boddeti</li>
+			<li>Yoshihisa Abe</li>
+		</ul>
+		Email us at <a href="mailto:contact@rainmon.com">contact@rainmon.com</a> to get in touch.
+	</div>
+</div>
+
+<ul id="navbar">
+	<li><a href="#clips">Clips</a></li>
+	<li><a href="#about">About</a></li>
+	<li><a href="#demo">Demo</a></li>
+	<li><a href="#source">Source</a></li>
+</ul>
+
+</body>
+</html>

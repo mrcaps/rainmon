@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<head>
+    <title>RainMon</title>
+
+    <script src="media/lib/jquery-1.6.2.min.js"></script>
+    <script src="media/lib/jquery-ui-1.8.16.custom.min.js"></script>
+    <script src="media/lib/jquery.ui.selectmenu.js"></script>
+    <script src="media/lib/jquery.cluetip.js"></script>
+    <script src="media/lib/jquery.blockUI.js"></script>
+    <!--[if lte IE 8]><script language="javascript" type="text/javascript" src="media/lib/excanvas.min.js"></script><![endif]-->
+    <script src="media/lib/jquery.flot.min.js"></script>
+    <script src="media/lib/jquery.flot.symbol.js"></script>
+    <script src="media/lib/jquery.flot.selection.min.js"></script>
+    <script src="media/lib/jquery.flot.crosshair.min.js"></script>
+    <script language="javascript" type="text/javascript" src="media/lib/jcalendar/js/jscal2.js"></script>
+    <script language="javascript" type="text/javascript" src="media/lib/jcalendar/js/lang/en.js"></script>
+    <link rel="stylesheet" type="text/css" href="media/lib/jcalendar/css/jscal2.css" />
+    <link rel="stylesheet" type="text/css" href="media/lib/jcalendar/css/border-radius.css" />
+
+    <link href='http://fonts.googleapis.com/css?family=Ubuntu' rel='stylesheet' type='text/css'>
+
+    <link rel="stylesheet" href="media/css/styles.css" type="text/css"/>
+    <link rel="stylesheet" href="media/css/cupertino/jquery-ui-1.8.16.custom.css" type="text/css"/>
+    <link rel="stylesheet" href="media/css/jquery.ui.selectmenu.css" type="text/css"/>
+    <link rel="stylesheet" href="media/css/jquery.cluetip.css" type="text/css"/>
+
+    <script>
+    var Options = {};
+    Options.dict = {
+        "analysis.hide": false,
+        "source.id": 1,
+        "timerange.start": "2011/12/11-8:30:00",
+        "timerange.end": "2012/01/20-8:30:00",
+        "plots.heatmap.show": false
+    };
+    Options.get = function(n) {
+        return Options.dict[n];
+    }
+    </script>
+    <script src="media/js/data.js"></script>
+    <script src="media/js/heatmap.js"></script>
+    <script src="media/js/plots.js"></script>
+    <script src="media/js/res.js"></script>
+    <script src="media/js/selector.js"></script>
+    <script src="media/js/tsel.js"></script>
+
+
+<script>
+/**
+ * @see http://stackoverflow.com/questions/7825448/webkit-issues-with-event-layerx-and-event-layery
+ */
+(function(){
+    // remove layerX and layerY
+    var all = $.event.props,
+        len = all.length,
+        res = [];
+    while (len--) {
+      var el = all[len];
+      if (el != 'layerX' && el != 'layerY') res.push(el);
+    }
+    $.event.props = res;
+}());
+
+/**
+ * Rain frontend UI
+ * @author ishafer
+ */
+
+function Sizer(height) {
+    this.sidew = 200 + 10 + Plot.LABEL_WIDTH/2;
+    this.pheight = height;
+}
+Sizer.resizeq = [];
+Sizer.pending = null;
+Sizer.prototype.width = function() {
+    return $(window).width() - this.sidew;
+}
+Sizer.prototype.height = function() {
+    return this.pheight;
+}
+
+function Scatterplot(res,el,width,height) {
+    this.res = res;
+    this.el = el;
+    this.width = width;
+    this.height = height;
+    this.enabled = false;
+    this.loaded = false;
+}
+Scatterplot.prototype.load = function(next) {
+    var self = this;
+    if (!this.proj) {
+        this.res.getProjection(function(proj) {
+            self.res.getMeta(function(meta) {
+                self.proj = proj;
+                self.meta = meta;
+            });
+        });
+        next();
+    } else {
+        next();
+    }
+}
+Scatterplot.prototype.toggle = function() {
+    var self = this;
+    this.enabled = !this.enabled;
+    $(this.el).animate({
+        height: this.enabled ? this.height : 0
+    });
+    if (!this.loaded) {
+        this.loaded = true;
+        var PAD = 10;
+        this.plotel = $("<div>").css({
+            left: PAD,
+            top: PAD,
+            width: this.width-PAD*2,
+            height: this.height-PAD*2
+        }).appendTo(this.el);
+
+        this.load(function() {
+            self.doPlot(0,1);
+        });
+    }
+}
+Scatterplot.prototype.getSymbol = function(dx) {
+    var syms = ["circle", "square", "diamond", "triangle", "cross"];
+    return syms[dx%syms.length];
+}
+Scatterplot.prototype.doPlot = function(hv1dx,hv2dx) {
+    var self = this;
+    var dta = [];
+    /*
+    //plot all
+    for (var i = 0; i < this.proj.length; ++i) {
+        dta.push([this.proj[i][hv1dx], this.proj[i][hv2dx]]);
+    }
+    var toplot = [{label: "all", data: dta, points: {symbol: "circle"}}];
+    */
+
+    var mbins = this.getMetricBins(this.meta.ts_names);
+    var toplot = [];
+    var dx = 0;
+    $.each(mbins, function(k,v) {
+        var set = {label: k, data: [], points: {symbol: self.getSymbol(dx)}};
+        for (var i = 0; i < v.length; ++i) {
+            set.data.push([self.proj[v[i].index][hv1dx], self.proj[v[i].index][hv2dx]]);
+        }
+        ++dx;
+        toplot.push(set);
+    });
+
+    var plot = $.plot(this.plotel, toplot, {
+        series: {points: { show: true, radius: 3 }},
+        grid: { hoverable: true, clickable: true },
+        xaxis: { show: false },
+        yaxis: { show: false }
+    });
+    var tip = $("<div>").css({
+        "position":"absolute",
+        "font-weight":"bold"
+    }).appendTo(this.plotel);
+
+    $(this.plotel).unbind("plothover");
+    $(this.plotel).bind("plothover", function(evt,pos,item) {
+        if (item) {
+            var bin = mbins[item.series.label];
+            var pt = bin[item.dataIndex];
+            var o = plot.pointOffset({x: item.datapoint[0], y: item.datapoint[1]});
+            $(tip).css({
+                "left": o.left+5,
+                "top": o.top-22
+            }).text(pt.node);
+
+        }
+    });
+}
+/**
+ * Assume the metric name is the second dot separated part of the full name
+ */
+Scatterplot.prototype.getMetricName = function(fullname) {
+    var splt = fullname.indexOf(".");
+    if (splt > -1) {
+        return {
+            node: fullname.substring(0,splt),
+            metric: fullname.substring(splt+1)
+        };
+    } else {
+        return {
+            node: fullname,
+            metric: "other"
+        };
+    }
+}
+Scatterplot.prototype.getMetricBins = function(tsnames) {
+    var mbins = {};
+    for (var i = 0; i < tsnames.length; ++i) {
+        var n = this.getMetricName(tsnames[i]);
+        if (!(n.metric in mbins)) {
+            mbins[n.metric] = [];
+        };
+        if (n.metric in mbins) {
+            mbins[n.metric].push({
+                node: n.node,
+                index: i
+            });
+        }
+    }
+    return mbins;
+}
+
+Exec = {};
+Exec.analyze = function() {
+    var attributes = Selector.getSelected("attrsel");
+    var machines = Selector.getSelected("compsel");
+    var savename = $("#txt-savename").attr("value")
+
+    var parms = {
+        outname: savename,
+        attributes: JSON.stringify(attributes),
+        machines: JSON.stringify(machines),
+        tmin: JSON.stringify($("#timerange-start").val()),
+        tmax: JSON.stringify($("#timerange-end").val()),
+        tsdbhost: Selector.source.host,
+        tsdbport: Selector.source.port,
+        cloudifyNames: Selector.source.cloudifyNames,
+        skipstages: ["pipeline.KalmanStage","pipeline.DrawStage"]
+    };
+
+    var step = $("#timerange-step").attr("value");
+    if (step.length > 0) {
+        parms.tstep = step;
+    }
+    $.getJSON("analyze", parms, function(dta) {
+
+    });
+
+    //Exec.loadRes();
+    var statustxt = $("<span>").text("starting");
+    var thisrun = $("<li>").css({"font-size":"0.8em"}).append(
+        $("<img>").attr("src","media/img/loading.gif"),
+        $("<b>").text(" " + savename + ": "),
+        $("<span>").text("status: "),
+        statustxt
+    );
+    $("#lst-running").append(thisrun);
+
+    //wait for task completion
+    var loadWait = setInterval(function() {
+        Res.getStatus(savename, function(dta) {
+            var lastd = "waiting";
+            if (dta.length > 0) {
+                lastd = dta[dta.length-1];
+            }
+            statustxt.text(lastd);
+            if (lastd.indexOf("Complete") > -1) {
+                clearInterval(loadWait);
+                $(thisrun).remove();
+                $("#lst-saves").append(
+                    $("<option>").text(savename).attr("value",savename)
+                );
+            }
+        });
+    },1000);
+}
+Exec.showrunit = function() {
+    $("#btn-analyze").button().click(function() {
+        $("#txt-savename").attr("value", (new Date()).getTime() + "");
+        Exec.analyze();
+        $("#pane-running").slideDown();
+    });
+    $("#btn-usecache").button().click(function() {
+        var savename = $("#lst-saves").attr("value");
+        Exec.loadRes(savename);
+    });
+    $("#runit").dialog({
+        resizable: false,
+        minWidth: 450,
+        minHeight: 250,
+        hide: "fadeOut"
+    });
+}
+Exec.fadeInUI = function() {
+    $("#runit").dialog("close");
+    //close all the machines/attributes accordion panels
+    $("#sel-area").accordion("activate", 4);
+    $("#mainui").animate({
+        "opacity": 1.0
+    }, 2000, function() {
+        
+    });
+}
+
+/**
+ * Load saved results into the UI
+ */
+Exec.loadRes = function(savename) {
+    Exec.res = new Res(savename);
+    Exec.ts = new TSel(Exec.res);
+    Exec.ts.init();
+
+    //load heatmap
+    if (Options.get("plots.heatmap.show")) {
+        var heatmap = new Heatmap(Exec.res, $("#heatmap"), 400, 120);
+        $("#btn-heatmap-expand").click(function() {
+            heatmap.toggle();
+        });
+        mgr.setHoverFn(function(pos, obj) {
+            heatmap.getIndex(pos.x, function(dx) {
+                heatmap.showIndex(dx);
+            });
+        });
+        mgr.add(new HeatmapPlot(heatmap, new Sizer(200)));
+    } else {
+        $("#btn-heatmap-expand")
+            .button("option","label","(heatmap turned off)")
+            .click(function() {
+                alert("To enable the heatmap, turn on plots.heatmap.show")
+            });
+    }
+
+    //load scatterplot
+    var scatter = new Scatterplot(Exec.res, $("#scatter"), 400, 400);
+    $("#btn-scatter-expand").click(function() {
+        scatter.toggle();
+    }); 
+
+    var loadsrc = new BoundData(savename, [{node:"",metric:"hv.0"}]);
+    var theplot = new Plot(loadsrc, true, new Sizer(100), null, null);
+    TSel.addHvDots(theplot, 0);
+    mgr.add(theplot);
+
+    Exec.fadeInUI();
+}
+
+$(document).ready(function() {
+    Selector.init();
+
+    mgr = new PlotManager($("#summarea"),$("#mainarea"));
+
+    if (Options.get("analysis.hide")) {
+        Exec.loadRes();
+    } else {
+        Exec.showrunit();
+    }
+
+    /*
+    var sizer = new Sizer(200);
+    datasrc = new FakeData(0.00000001, "foo");
+    loadsrc = new BoundData([{node:"",metric:"cloud1.proc.stat.intr.original"}]);
+    datasrc2 = new FakeData(0.00000006, "zim");
+    mgr.add(new Plot(datasrc, true, new Sizer(100), null, null));
+    mgr.add(new Plot(loadsrc, false, sizer, null, null));
+    for (var i = 0; i < 1; ++i) {
+        var dtas = new FakeData(Math.random() * 1e-7, "blah");
+        mgr.add(new Plot(dtas, false, sizer, null, null));      
+    }*/
+
+    //Main UI
+    //sort plots with delay
+    $("#mainarea").sortable({
+        placeholder: "ui-state-highlight",
+        cursor: "move",
+        delay: 1500,
+        connectWith: "#trashbin",
+        start: function(evt, ui) {
+            ui.helper.css({
+                opacity: 0.4
+            });
+            $("#trashbin").animate({
+                "bottom": 0
+            });
+        },
+        stop: function(evt, ui) {
+            if (ui.item) {
+                ui.item.css({
+                    opacity: 1
+                });
+            }
+            $("#trashbin").animate({
+                "bottom": -128
+            });
+        }
+    });
+    $("#trashbin").droppable({
+        accept: "*", //accept: "#mainarea > div",
+        hoverClass: "trashHover",
+        tolerance: "pointer",
+        //activeClass: "trashHover",
+        drop: function(evt, ui) {
+            var el = ui.draggable;
+            var pobj = el.data("pobj");
+            if (pobj) {
+                pobj.remove();
+            }
+            el.remove();
+        }
+    });
+    $("#mainarea").disableSelection();
+    $("#mainui").css({ "opacity": 0.15 });
+
+    //various UI bits
+    $("#btn-help").button({
+        icons: {
+            primary: "ui-icon-help"
+        },
+        text: false
+    }).css({
+        "font-size": "12px"
+    });
+
+    //load save names, existing saves
+    $("#txt-savename").attr("value",(new Date()).getTime());
+    Res.getSaves(function(saves) {
+        $("#lst-saves").empty();
+        $.each(saves, function(i, el) {
+            $("#lst-saves").append(
+                $("<option>").text(el).attr("value", el)
+            );
+        });
+    });
+
+    //load time selection area
+    var cal = Calendar.setup({
+        onSelect: function(cal) { cal.hide() },
+        showTime: true,
+        minuteStep: 1,
+        selection: Calendar.dateToInt(new Date())
+    });
+    var DATEFORMAT = "%Y/%m/%d-%H:%M:%S"
+    cal.manageFields("cs_btn", "timerange-start", DATEFORMAT);
+    cal.manageFields("ce_btn", "timerange-end", DATEFORMAT);
+//  var tend = new Date();
+//  var tstart = new Date();
+//  tstart.setDate(tend.getDate() - 3);
+//  $("#timerange-start").attr("value", Calendar.printDate(tstart, DATEFORMAT));
+//  $("#timerange-end").attr("value", Calendar.printDate(tend, DATEFORMAT));
+    $("#timerange-start").attr("value", Options.get("timerange.start"));
+    $("#timerange-end").attr("value", Options.get("timerange.end"));
+
+    //scatterplot area
+    $("#btn-heatmap-expand").button();
+    $("#btn-scatter-expand").button();
+});
+
+$(window).resize(function() {
+    Sizer.resizeq.push({
+        wwidth: $(window).width(),
+        wheight: $(window).height()
+    });
+    clearTimeout(Sizer.pending);
+    Sizer.pending = setTimeout(function() {
+        if (Sizer.resizeq.length > 0) {
+            lastresize = Sizer.resizeq[Sizer.resizeq.length-1];
+            Sizer.resizeq = [];
+
+            mgr.remake();
+        }
+    },500);
+});
+</script>
+
+</head>
+<body>
+
+<div id="leftbar">
+  <img src="media/img/rainlogo-small.png" alt="" />
+
+    <div style="margin-left: 10px; margin-top: -2px;">
+        <div>www.rainmon.com</div>
+        <div>ACM KDD 2012</div>
+    </div>
+    <div id="pnl-helpbtn">
+        <button id="btn-help">Help/About</button>
+  </div>
+
+  <div>
+    <div style="margin-left: 10px;">
+      </div>
+  </div>
+
+  <div id="left-bottom">
+        <div id="sel-area">
+            <h3><a href="#">Data Sources</a></h3>
+            <div>
+                <div id="sourcessel">
+                </div>
+            </div>
+
+            <h3><a href="#">Metrics</a></h3>
+            <div>
+                <div id="attrsel">
+                </div>
+            </div>
+
+            <h3><a href="#">Nodes</a></h3>
+            <div>
+                <div style="text-align:center;font-size:10px;margin-bottom:3px;">
+                    <button id="btn-csall">All</button>
+                    <button id="btn-csnone">None</button>
+                </div>
+                <div id="compsel">
+                </div>
+            </div>
+
+            <h3><a href="#">Time Range</a></h3>
+            <div style="font-size:15px">
+                From
+                <br>
+                <input size="16" id="timerange-start" name="cs"/><button id="cs_btn" type="button">...</button>
+                <br>
+                To
+                <br>
+                <input size="16" id="timerange-end" name="ce"/><button id="ce_btn" type="button">...</button>
+                <br>
+                Step <i>(optional)</i>
+                <br>
+                <input size="16" id="timerange-step" type="text"/>
+            </div>
+
+            <h3><a href="#">Plots</a></h3>
+            <div>
+                <div class="txt">
+                Type a timeseries, or press the down arrow for suggestions:
+                </div>
+                <div id="plotsel">
+                    <input id="tsinput" type="text" size="15"/>
+                </div>
+                <div>
+                    <ul id="lst-newplot">
+                        
+                    </ul>
+                    <button id="btn-addplot">Add Plot</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="runit" title="Analyze or Load" style="display:none;">
+    <div id="pane-runit">
+        <div><b>Start new analysis</b></div>
+        <ol>
+            <li>Select metrics, nodes, and the time range to analyze</li>
+            <li>Type a name to save the analysis results:
+                <input type="text" value="" id="txt-savename"/></li>
+            <li>Click here: <button id="btn-analyze">Run Analysis</button></li> 
+        </ol>
+        
+        <div id="pane-running" style="display:none">
+            Running analyses:
+            <ul id="lst-running" style="margin-top:0;padding-top:0;">
+            </ul>
+        </div>
+    </div>
+    <hr/>
+    <div><b>... or load an existing analysis result</b></br></div>
+    <div>
+        <select id="lst-saves">
+
+        </select>
+        <button id="btn-usecache">Use Saved</button>
+    </div>
+</div>
+
+<div id="mainui">
+    <div id="mainarea" style="padding-top: 45px">
+
+    </div>
+    <div id="summarea">
+
+    </div>
+
+    <div id="cont-heatmap">
+        <div><input type="checkbox" id="btn-heatmap-expand" /><label for="btn-heatmap-expand" id="lbl-heatmap-expand">Heatmap</label></div>
+        <div id="heatmap">
+
+        </div>
+    </div>
+    <div id="cont-scatter">
+        <div><input type="checkbox" id="btn-scatter-expand" /><label for="btn-scatter-expand" id="lbl-scatter-expand">Scatterplot</label></div>
+        <div id="scatter">
+
+        </div>
+    </div>
+</div>
+
+<div id="trashbin">
+
+</div>
+
+</body>
+</html>

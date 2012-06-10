@@ -1,0 +1,18 @@
+#A basic PHP backend for looking at a results cache on servers that don't support django
+# (no analysis support)
+
+#Things that also need to be done:
+#symlink media to the media directory of rain
+#symlink (or copy) index.html to this directory
+#make a cache directory
+
+RewriteEngine On
+RewriteRule ^getprojection$ cache/projection.json [L]
+RewriteRule ^getheatmap$ cache/heatmap.json [L]
+
+#getsummary
+RewriteRule ^getsummary$ cache.php?req=getsummary [L]
+
+#data?tmin=0&tmax=10000000000&node=&metric=hv.0
+#	combine the query strings
+RewriteRule ^data$ cache.php?req=data [L,QSA]

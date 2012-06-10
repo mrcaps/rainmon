@@ -1,0 +1,50 @@
+iostat.disk.msec_read.None.datapoints
+	slope=  0.926699 	y_intcpt=  -1.3924 	corr=  0.999979
+iostat.disk.msec_write.None.datapoints
+	slope=  0.682269 	y_intcpt=  2.39788 	corr=  0.992298
+iostat.disk.read_requests.None.datapoints
+	slope=  0.947502 	y_intcpt=  1.81083 	corr=  0.999958
+iostat.disk.read_sectors.None.datapoints
+	slope=  0.934706 	y_intcpt=  1.51457 	corr=  0.99929
+iostat.disk.write_requests.None.datapoints
+	slope=  0.978755 	y_intcpt=  1.87753 	corr=  0.999988
+iostat.disk.write_sectors.None.datapoints
+	slope=  1.00365 	y_intcpt=  1.51774 	corr=  0.999641
+net.sockstat.memory.type.tcp.datapoints
+	slope=  0.968891 	y_intcpt=  1.156 	corr=  0.988357
+net.sockstat.num_sockets.type.tcp.datapoints
+	slope=  0.895754 	y_intcpt=  0.985384 	corr=  0.999777
+proc.loadavg.runnable.None.datapoints
+	slope=  0.840277 	y_intcpt=  2.91314 	corr=  0.997807
+proc.loadavg.total_threads.None.datapoints
+	slope=  0.838742 	y_intcpt=  2.55074 	corr=  0.997986
+proc.meminfo.buffers.None.datapoints
+	slope=  1.0027 	y_intcpt=  3.36276 	corr=  0.999937
+proc.meminfo.cached.None.datapoints
+	slope=  1.72586 	y_intcpt=  -4.44752 	corr=  0.999898
+proc.meminfo.memfree.None.datapoints
+	slope=  1.71353 	y_intcpt=  -4.33062 	corr=  0.9997
+proc.meminfo.memtotal.None.datapoints
+	slope=  0.941221 	y_intcpt=  -0.689129 	corr=  0.999974
+proc.net.bytes.direction.in.datapoints
+	slope=  1.04304 	y_intcpt=  2.35483 	corr=  0.999418
+proc.net.bytes.direction.out.datapoints
+	slope=  1.06635 	y_intcpt=  1.96093 	corr=  0.989362
+proc.net.packets.direction.in.datapoints
+	slope=  1.06555 	y_intcpt=  2.94809 	corr=  0.999855
+proc.net.packets.direction.out.datapoints
+	slope=  1.06988 	y_intcpt=  2.97867 	corr=  0.999177
+proc.stat.cpu.type.iowait.datapoints
+	slope=  0.970807 	y_intcpt=  3.68805 	corr=  0.999962
+proc.stat.cpu.type.nice.datapoints
+	slope=  0.948939 	y_intcpt=  -0.740958 	corr=  0.999941
+proc.stat.cpu.type.system.datapoints
+	slope=  0.970807 	y_intcpt=  3.68805 	corr=  0.999962
+proc.stat.cpu.type.user.datapoints
+	slope=  0.970807 	y_intcpt=  3.68805 	corr=  0.999962
+proc.stat.ctxt.None.datapoints
+	slope=  1.08458 	y_intcpt=  2.85314 	corr=  0.999169
+proc.stat.intr.None.datapoints
+	slope=  1.11153 	y_intcpt=  2.27634 	corr=  0.998429
+proc.stat.procs_blocked.None.datapoints
+	slope=  0.821293 	y_intcpt=  1.38482 	corr=  0.998175

@@ -1,0 +1,252 @@
+Running stage <pipeline.CachingCrawlStage instance at 0x02CD3378>
+Cache >> Using Cached Results
+Running stage <pipeline.TrimStage instance at 0x02CD33A0>
+len 2603
+Running stage <pipeline.ResampleStage instance at 0x02CD33F0>
+Sampling from  1321992006 1322196299 300
+Running stage <pipeline.CypressStage instance at 0x02CD33C8>
+Running stage <pipeline.NormalizeStage instance at 0x02CD34B8>
+Running stage <pipeline.SpiritStage instance at 0x02CD3468>
+Running PCA ...
+Running stage <pipeline.NormalizeStage instance at 0x02CD34E0>
+Running stage <pipeline.ErrorStage instance at 0x02CD3530>
+Calculating error
+Analysis Complete
+max hvs: 2
+hvchunk shape: (2, 681)
+Error was  0.926889274067
+Size of hv.npz was 12706
+Size of lowpass.npz was 449550
+Size of original.npz was 433322
+Size of spiky.npz was 14985
+Running stage <pipeline.CachingCrawlStage instance at 0x02CD3378>
+Cache >> Using Cached Results
+Running stage <pipeline.TrimStage instance at 0x02CD33A0>
+len 2603
+Running stage <pipeline.ResampleStage instance at 0x02CD33F0>
+Sampling from  1321992006 1322196299 300
+Running stage <pipeline.CypressStage instance at 0x02CD33C8>
+Running stage <pipeline.NormalizeStage instance at 0x02CD34B8>
+Running stage <pipeline.SpiritStage instance at 0x02CD3468>
+Running PCA ...
+Running stage <pipeline.NormalizeStage instance at 0x02CD34E0>
+Running stage <pipeline.ErrorStage instance at 0x02CD3530>
+Calculating error
+Analysis Complete
+max hvs: 6
+hvchunk shape: (6, 681)
+Error was  0.948647892166
+Size of hv.npz was 37206
+Size of lowpass.npz was 449550
+Size of original.npz was 433322
+Size of spiky.npz was 14985
+Running stage <pipeline.CachingCrawlStage instance at 0x02CD3378>
+Cache >> Using Cached Results
+Running stage <pipeline.TrimStage instance at 0x02CD33A0>
+len 2603
+Running stage <pipeline.ResampleStage instance at 0x02CD33F0>
+Sampling from  1321992006 1322196299 300
+Running stage <pipeline.CypressStage instance at 0x02CD33C8>
+Running stage <pipeline.NormalizeStage instance at 0x02CD34B8>
+Running stage <pipeline.SpiritStage instance at 0x02CD3468>
+Running PCA ...
+Running stage <pipeline.NormalizeStage instance at 0x02CD34E0>
+Running stage <pipeline.ErrorStage instance at 0x02CD3530>
+Calculating error
+Analysis Complete
+max hvs: 8
+hvchunk shape: (8, 681)
+Error was  0.954205839168
+Size of hv.npz was 49435
+Size of lowpass.npz was 449550
+Size of original.npz was 433322
+Size of spiky.npz was 14985
+Running stage <pipeline.CachingCrawlStage instance at 0x02CD3378>
+Cache >> Using Cached Results
+Running stage <pipeline.TrimStage instance at 0x02CD33A0>
+len 2603
+Running stage <pipeline.ResampleStage instance at 0x02CD33F0>
+Sampling from  1321992006 1322196299 300
+Running stage <pipeline.CypressStage instance at 0x02CD33C8>
+Running stage <pipeline.NormalizeStage instance at 0x02CD34B8>
+Running stage <pipeline.SpiritStage instance at 0x02CD3468>
+Running PCA ...
+Running stage <pipeline.NormalizeStage instance at 0x02CD34E0>
+Running stage <pipeline.ErrorStage instance at 0x02CD3530>
+Calculating error
+Analysis Complete
+max hvs: 16
+hvchunk shape: (16, 681)
+Error was  0.967091424347
+Size of hv.npz was 98356
+Size of lowpass.npz was 449550
+Size of original.npz was 433322
+Size of spiky.npz was 14985
+Running stage <pipeline.CachingCrawlStage instance at 0x02CD3378>
+Cache >> Using Cached Results
+Running stage <pipeline.TrimStage instance at 0x02CD33A0>
+len 2603
+Running stage <pipeline.ResampleStage instance at 0x02CD33F0>
+Sampling from  1321992006 1322196299 300
+Running stage <pipeline.CypressStage instance at 0x02CD33C8>
+Running stage <pipeline.NormalizeStage instance at 0x02CD34B8>
+Running stage <pipeline.SpiritStage instance at 0x02CD3468>
+Running PCA ...
+Running stage <pipeline.NormalizeStage instance at 0x02CD34E0>
+Running stage <pipeline.ErrorStage instance at 0x02CD3530>
+Calculating error
+Analysis Complete
+max hvs: 32
+hvchunk shape: (32, 681)
+Error was  0.980464211059
+Size of hv.npz was 196358
+Size of lowpass.npz was 449550
+Size of original.npz was 433322
+Size of spiky.npz was 14985
+Running stage <pipeline.CachingCrawlStage instance at 0x02CD3378>
+Cache >> Using Cached Results
+Running stage <pipeline.TrimStage instance at 0x02CD33A0>
+len 2603
+Running stage <pipeline.ResampleStage instance at 0x02CD33F0>
+Sampling from  1321992006 1322196299 300
+Running stage <pipeline.CypressStage instance at 0x02CD33C8>
+Running stage <pipeline.NormalizeStage instance at 0x02CD34B8>
+Running stage <pipeline.SpiritStage instance at 0x02CD3468>
+Running PCA ...
+Running stage <pipeline.NormalizeStage instance at 0x02CD34E0>
+Running stage <pipeline.ErrorStage instance at 0x02CD3530>
+Calculating error
+Analysis Complete
+max hvs: 64
+hvchunk shape: (64, 681)
+Error was  0.994438620504
+Size of hv.npz was 391996
+Size of lowpass.npz was 449550
+Size of original.npz was 433322
+Size of spiky.npz was 14985
+Running stage <pipeline.CachingCrawlStage instance at 0x02CD3378>
+Cache >> Using Cached Results
+Running stage <pipeline.TrimStage instance at 0x02CD33A0>
+len 2603
+Running stage <pipeline.ResampleStage instance at 0x02CD33F0>
+Sampling from  1321992006 1322196299 300
+Running stage <pipeline.CypressStage instance at 0x02CD33C8>
+Running stage <pipeline.NormalizeStage instance at 0x02CD34B8>
+Running stage <pipeline.SpiritStage instance at 0x02CD3468>
+Running PCA ...
+Running stage <pipeline.NormalizeStage instance at 0x02CD34E0>
+Running stage <pipeline.ErrorStage instance at 0x02CD3530>
+Calculating error
+Analysis Complete
+max hvs: 2
+hvchunk shape: (2, 681)
+Error was  0.766855523639
+Size of hv.npz was 12693
+Size of lowpass.npz was 445925
+Size of original.npz was 433322
+Size of spiky.npz was 845
+Running stage <pipeline.CachingCrawlStage instance at 0x02CD3378>
+Cache >> Using Cached Results
+Running stage <pipeline.TrimStage instance at 0x02CD33A0>
+len 2603
+Running stage <pipeline.ResampleStage instance at 0x02CD33F0>
+Sampling from  1321992006 1322196299 300
+Running stage <pipeline.CypressStage instance at 0x02CD33C8>
+Running stage <pipeline.NormalizeStage instance at 0x02CD34B8>
+Running stage <pipeline.SpiritStage instance at 0x02CD3468>
+Running PCA ...
+Running stage <pipeline.NormalizeStage instance at 0x02CD34E0>
+Running stage <pipeline.ErrorStage instance at 0x02CD3530>
+Calculating error
+Analysis Complete
+max hvs: 6
+hvchunk shape: (6, 681)
+Error was  0.845808094451
+Size of hv.npz was 37180
+Size of lowpass.npz was 445925
+Size of original.npz was 433322
+Size of spiky.npz was 845
+Running stage <pipeline.CachingCrawlStage instance at 0x02CD3378>
+Cache >> Using Cached Results
+Running stage <pipeline.TrimStage instance at 0x02CD33A0>
+len 2603
+Running stage <pipeline.ResampleStage instance at 0x02CD33F0>
+Sampling from  1321992006 1322196299 300
+Running stage <pipeline.CypressStage instance at 0x02CD33C8>
+Running stage <pipeline.NormalizeStage instance at 0x02CD34B8>
+Running stage <pipeline.SpiritStage instance at 0x02CD3468>
+Running PCA ...
+Running stage <pipeline.NormalizeStage instance at 0x02CD34E0>
+Running stage <pipeline.ErrorStage instance at 0x02CD3530>
+Calculating error
+Analysis Complete
+max hvs: 8
+hvchunk shape: (8, 681)
+Error was  0.862285900965
+Size of hv.npz was 49410
+Size of lowpass.npz was 445925
+Size of original.npz was 433322
+Size of spiky.npz was 845
+Running stage <pipeline.CachingCrawlStage instance at 0x02CD3378>
+Cache >> Using Cached Results
+Running stage <pipeline.TrimStage instance at 0x02CD33A0>
+len 2603
+Running stage <pipeline.ResampleStage instance at 0x02CD33F0>
+Sampling from  1321992006 1322196299 300
+Running stage <pipeline.CypressStage instance at 0x02CD33C8>
+Running stage <pipeline.NormalizeStage instance at 0x02CD34B8>
+Running stage <pipeline.SpiritStage instance at 0x02CD3468>
+Running PCA ...
+Running stage <pipeline.NormalizeStage instance at 0x02CD34E0>
+Running stage <pipeline.ErrorStage instance at 0x02CD3530>
+Calculating error
+Analysis Complete
+max hvs: 16
+hvchunk shape: (16, 681)
+Error was  0.925160839736
+Size of hv.npz was 98268
+Size of lowpass.npz was 445925
+Size of original.npz was 433322
+Size of spiky.npz was 845
+Running stage <pipeline.CachingCrawlStage instance at 0x02CD3378>
+Cache >> Using Cached Results
+Running stage <pipeline.TrimStage instance at 0x02CD33A0>
+len 2603
+Running stage <pipeline.ResampleStage instance at 0x02CD33F0>
+Sampling from  1321992006 1322196299 300
+Running stage <pipeline.CypressStage instance at 0x02CD33C8>
+Running stage <pipeline.NormalizeStage instance at 0x02CD34B8>
+Running stage <pipeline.SpiritStage instance at 0x02CD3468>
+Running PCA ...
+Running stage <pipeline.NormalizeStage instance at 0x02CD34E0>
+Running stage <pipeline.ErrorStage instance at 0x02CD3530>
+Calculating error
+Analysis Complete
+max hvs: 32
+hvchunk shape: (32, 681)
+Error was  0.960914177624
+Size of hv.npz was 196243
+Size of lowpass.npz was 445925
+Size of original.npz was 433322
+Size of spiky.npz was 845
+Running stage <pipeline.CachingCrawlStage instance at 0x02CD3378>
+Cache >> Using Cached Results
+Running stage <pipeline.TrimStage instance at 0x02CD33A0>
+len 2603
+Running stage <pipeline.ResampleStage instance at 0x02CD33F0>
+Sampling from  1321992006 1322196299 300
+Running stage <pipeline.CypressStage instance at 0x02CD33C8>
+Running stage <pipeline.NormalizeStage instance at 0x02CD34B8>
+Running stage <pipeline.SpiritStage instance at 0x02CD3468>
+Running PCA ...
+Running stage <pipeline.NormalizeStage instance at 0x02CD34E0>
+Running stage <pipeline.ErrorStage instance at 0x02CD3530>
+Calculating error
+Analysis Complete
+max hvs: 64
+hvchunk shape: (64, 681)
+Error was  0.991217347257
+Size of hv.npz was 391842
+Size of lowpass.npz was 445925
+Size of original.npz was 433322
+Size of spiky.npz was 845

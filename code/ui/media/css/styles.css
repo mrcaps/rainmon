@@ -1,0 +1,141 @@
+html, body {
+	font-family: 'Ubuntu', sans-serif;
+    overflow: hidden;
+}
+input {
+    font-family: 'Ubuntu', sans-serif;
+}
+
+#leftbar {
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    bottom: 0px;
+    width: 200px;
+}
+
+#pnl-helpbtn {
+    position: absolute;
+    left: 160px;
+    top: 65px;
+}
+
+#lst-newplot {
+    margin-left: 15px;
+    padding-left: 0px;
+    font-size: 14px;
+}
+#lst-newplot li {
+    list-style-image:url('../img/icon-chart.gif');
+}
+
+.txt {
+    font-size: 14px;
+}
+
+#compsel, #attrsel {
+	width:150px;
+	font-size: 10px;
+}
+#sel-area {
+    position: absolute;
+    left: 0px; right: 0px; bottom: 0px;  
+}
+.topzero {
+    top: 0px;
+}
+#left-bottom {
+    position: absolute;
+    left: 0px; top: 110px; right: 0px; bottom: 0px;  
+}
+#sel-area h3 {
+    font-size: 15px;
+    margin: 0px;
+}
+#sel-area .ui-accordion-content {
+    padding: 10px;
+    overflow-x: hidden !important;
+}
+
+#runit div {
+    margin-bottom: 10px;
+}
+
+#summarea, #mainarea {
+    position: absolute;
+    left: 205px;
+    right: 0px;
+}
+#summarea {
+    top: 0px;
+    background: #fff;
+    box-shadow: 0px 10px 15px #fff;
+    margin-bottom: -10px;
+}
+#mainarea {
+    top: 50px;
+    bottom: 0px;
+    overflow-y: scroll;
+    overflow-x: hidden;
+}
+
+#lst-saves {
+    font-size: 1.5em;
+}
+
+#trashbin {
+    position: absolute;
+    bottom: -128px;
+    right: 30px;
+    width: 128px;
+    height: 256px;
+    background-image: url('../img/icon-trash.png');
+    background-repeat: no-repeat;
+    background-position: 0px 128px;
+}
+.trashHover {
+    background-image: url('../img/icon-trash-full.png') !important;
+}
+
+.sidetitle {
+    text-align: center;
+    margin: 0px;
+    padding: 0px;
+}
+
+.ui-state-highlight {
+    height: 150px; line-height: 150px;
+    margin: 20px 0 20px 0;
+}
+
+#cont-heatmap, #cont-scatter {
+    position: absolute;
+    bottom: -7px;
+    left: 50%;
+}
+#cont-heatmap {
+    margin-left: -305px;
+}
+#cont-scatter {
+    margin-left: 105px;
+}
+#btn-heatmap-expand, 
+#lbl-heatmap-expand, 
+#btn-scatter-expand,
+#lbl-scatter-expand {
+    width: 400px;
+}
+#heatmap, #scatter {
+    margin-top: -2px;
+    border-left: 2px solid #ccc;
+    border-right: 2px solid #ccc;
+    background: #fff;
+}
+
+/*
+colorscheme:
+dark blue: #2779aa;
+verdant blue: #3BAAE3;
+med blue: #aed0ea;
+light blue: #d7ebf9;
+*/

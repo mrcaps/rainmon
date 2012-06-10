@@ -1,0 +1,5 @@
+RewriteEngine On
+#RewriteRule ^media/(.*)$ /home/rainmon/public_html/rain/media/$1 [L]
+#RewriteRule ^admin_media/(.*)$ /home/rainmon/public_html/rain/admin_media/$1 [L]
+RewriteRule ^(rainmon\.fcgi/.*)$ - [L]
+RewriteRule ^(.*)$ rainmon.fcgi/$1 [L]
