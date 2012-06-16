@@ -214,8 +214,6 @@ Exec.analyze = function() {
     var machines = Selector.getSelected("compsel");
     var savename = $("#txt-savename").attr("value");
 
-    console.log("Using save name", savename);
-
     var parms = {
         outname: savename,
         attributes: JSON.stringify(attributes),
