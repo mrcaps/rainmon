@@ -283,29 +283,68 @@ class ResampleStage:
     '''
     def __init__(self, step=20):
         '''
-        @param step: timestep for resampling (in seconds)
+        @param step: timestep for resampling (in seconds).
+            Specify 0 estimate from data.
         '''
         self.step = step
-        pass
+
+    def most_common_step(self, ts):
+        '''
+        Obtain the most frequent time delta from a time list
+        @param ts the list of time points
+        '''
+        deltas = dict()
+        if len(ts) <= 1:
+            return None
+        for dx in xrange(1,len(ts)):
+            delta = ts[dx] - ts[dx-1]
+            if not delta in deltas:
+                deltas[delta] = 0
+            deltas[delta] += 1
+        maxn = 0
+        maxdelta = 0
+        for (delta, n) in deltas.iteritems():
+            if n > maxn:
+                maxdelta = delta
+                maxn = n
+        return maxdelta
 
     def run(self, input):
         '''
         Required input keys:
         data, ts_names
         '''
-        #take step input from the pipeline if available
-        if "tstep" in input and input["tstep"] != None:
-            self.step = int(float(input["tstep"]))
+        #smallest time in data
         mint = float("inf")
+        #largest time in data
         maxt = float("-inf")
+        #most common steps
+        mcses = []
         for data in input['data']:
             if data is not None and len(data[0]) > 0:
                 (ts, vs) = data
                 mint = min(mint, ts[0])
                 maxt = max(maxt, ts[len(ts)-1])
+
+                #estimate step from data
+                if self.step <= 0:
+                    mcs = self.most_common_step(ts)
+                    if None != mcs:
+                        mcses.append(mcs)
+
+        if len(mcses) != 0:
+            self.step = min(mcses)
+
+        if maxt < mint:
+            raise Exception("No data was obtained")
         
+        #take step input from the pipeline if available
+        if "tstep" in input and input["tstep"] != None:
+            self.step = int(float(input["tstep"]))
+
         print "Sampling from ", mint, maxt, self.step
-        tsample = numpy.arange(mint, maxt, self.step)
+        epsilon = numpy.finfo(numpy.float).eps * 1e4
+        tsample = numpy.arange(mint, maxt + epsilon, self.step)
 
         output_ts = []
         tsnames = []
@@ -326,7 +365,8 @@ class ResampleStage:
         output['step'] = self.step
         output['tsample'] = tsample
         output['data'] = output_ts
-        output['hosts'] = input['hosts']
+        if 'hosts' in input:
+            output['hosts'] = input['hosts']
 
         return output
 
@@ -363,7 +403,8 @@ class CypressStage:
         output['tsample'] = input['tsample']
         output['ts_names'] = input['ts_names']
         output['data'] = output_ts
-        output['hosts'] = input['hosts']
+        if 'hosts' in input:
+            output['hosts'] = input['hosts']
         return output
 
 class TrimStage:

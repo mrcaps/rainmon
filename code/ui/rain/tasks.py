@@ -10,6 +10,7 @@ except:
             return target
         return decorator
 import sys
+import traceback
 
 IMPORTPATH = "../../"
 if IMPORTPATH not in sys.path:
@@ -77,14 +78,21 @@ def run_pipeline(outname, machines, attributes, startt, endt, \
         withnl = txt + "\n"
         sys.stdout.write(withnl)
         dump.printstatus(withnl)
-    output = pipeline.run(input,statuscb=statuswriter)
+
+    output = None
+    try:
+        output = pipeline.run(input,statuscb=statuswriter)
+    except:
+        traceback.print_exc()
+        dump.printstatus(traceback.format_exc().splitlines()[-1])
     #print "Got output: ", output.keys()
     
-    dump.write(output)
+    if output != None:
+        dump.write(output)
     
     print "Analysis Done"
 
-    return "Done"
+    return '{"status":"Done"}'
 
 @task()
 def get_savenames():
