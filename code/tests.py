@@ -12,9 +12,8 @@ class TestAnalysis(unittest.TestCase):
     def test_reconerror(self):
         self.assertEqual(recon_error(np.array([1,1,1]),np.array([1,1,1]))[0],1.0)
         rerr = recon_error(np.array([1.,0.5,1.]),np.array([1.,0.9,1.]))
-        assertTrue(rerr < 1)
-        assertTrue(rerr > 0)
-
+        self.assertTrue(rerr[0] < 1)
+        self.assertTrue(rerr[0] > 0)
 
 def get_compress_input():
     input = {} 
