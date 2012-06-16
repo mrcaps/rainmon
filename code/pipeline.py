@@ -594,8 +594,9 @@ class HeatmapStage:
 
         return output
 
-#Run SPIRIT on input["data"]
 class SpiritStage:
+    '''Run SPIRIT on input["data"]
+    '''
     def __init__(self, ispca=True,thresh=0.05,startm=3,ebounds=(0.9995, 1),vlambda=0.99,pcafixk=False):
         self.ispca = ispca
         self.thresh = thresh
@@ -640,8 +641,9 @@ class SpiritStage:
 
         return input
 
-# Run Kalman on Spirit Data
 class KalmanStage:
+    '''Run Kalman filter on summarized streams
+    '''
     def __init__(self,step_size=10,lookahead_flag=1):
         self.step_size = step_size
         # the flag with controls adaptive lookahead. Set it to "0" for fixed lookahead.
@@ -765,10 +767,13 @@ class DrawStage:
                 
         return input
 
-#compute reconstruction error
 class ErrorStage():
-    #addspikes: should spikes be added back in when calculating reconstruction error?
+    '''Compute reconstruction error
+    '''
     def __init__(self,addspikes=True):
+        '''
+        @param addspikes: should spikes be added back in when calculating reconstruction error?
+        '''
         self.addspikes = addspikes
 
     def run(self, input):
@@ -876,8 +881,3 @@ if __name__ == '__main__':
 
     input['metrics'] = metrics
     pipeline.run(input)
-    
-    # input['metrics'] = ['']
-    # for metric in metrics:
-    #     input['metrics'][0] = metric
-    #     pipeline.run(input)
