@@ -83,8 +83,10 @@ def run_pipeline(outname, machines, attributes, startt, endt, \
     try:
         output = pipeline.run(input,statuscb=statuswriter)
     except:
-        traceback.print_exc()
-        dump.printstatus(traceback.format_exc().splitlines()[-1])
+        exc_type, exc_value, exc_traceback = sys.exc_info()
+        dump.printstatus( \
+            traceback.format_exc().splitlines()[-1],
+            traceback.format_tb(exc_traceback))
     #print "Got output: ", output.keys()
     
     if output != None:
@@ -92,7 +94,7 @@ def run_pipeline(outname, machines, attributes, startt, endt, \
     
     print "Analysis Done"
 
-    return '{"status":"Done"}'
+    return "Done"
 
 @task()
 def get_savenames():

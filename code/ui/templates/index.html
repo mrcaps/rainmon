@@ -253,8 +253,18 @@ Exec.analyze = function() {
             if (dta.length > 0) {
                 lastd = dta[dta.length-1];
             }
-            statustxt.text(lastd);
-            if (!wasFinished && (lastd.indexOf("Complete") > -1)) {
+
+            statustxt.empty();
+            var disp = $("<span>");
+            disp.append($("<span>").text(lastd.status));
+            if (lastd.detail) {
+                disp.append($("<a>").attr("href","#").text(" [details]").click(function() {
+                    alert(lastd.detail);
+                }));
+            }
+            statustxt.append(disp);
+
+            if (!wasFinished && (lastd.status.indexOf("Complete") > -1)) {
                 clearInterval(loadWait);
                 $(thisrun).remove();
                 $("#lst-saves").append(
