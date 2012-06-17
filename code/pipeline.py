@@ -802,6 +802,9 @@ TSDBHOST = globalcfg["tsdbhost"]
 TSDBPORT = globalcfg["tsdbport"]
 
 def get_default_pipeline():
+    '''
+    Original pipeline used for evaluation in KDD2012 paper
+    '''
     cfg = getconfig()
     tmpdir = cfg["tmpdir"][3:]
     #crawler = OpenTSDBCrawlStage(TSDBHOST,TSDBPORT)
@@ -831,6 +834,36 @@ def get_default_pipeline():
     #pipeline.append_stage(draw)
     #pipeline.append_stage(compress)
     return pipeline
+
+def get_current_pipeline():
+    cfg = getconfig()
+    tmpdir = cfg["tmpdir"][3:]
+    crawler = CachingCrawlStage(os.path.join(tmpdir,"tsdb"),TSDBHOST,TSDBPORT)
+    #trim = TrimStage()
+    resample = ResampleStage(0)
+    cypress = CypressStage()
+    spirit = SpiritStage(ispca=False,thresh=0.01,ebounds=(0,1.1),startm=6)
+    kalman = KalmanStage()
+    normalize = NormalizeStage(True)
+    denormalize = NormalizeStage(False)
+    draw = DrawStage(tmpdir, False)
+    errorcalc = ErrorStage()
+    heatmap = HeatmapStage()
+    compress = CompressionStage(tmpdir)
+    pipeline = Pipeline()
+    pipeline.append_stage(crawler)
+    #pipeline.append_stage(trim)
+    pipeline.append_stage(resample)
+    pipeline.append_stage(cypress)
+    pipeline.append_stage(normalize)
+    pipeline.append_stage(spirit)
+    pipeline.append_stage(heatmap)
+    pipeline.append_stage(kalman)
+    pipeline.append_stage(denormalize)
+    #pipeline.append_stage(errorcalc)
+    #pipeline.append_stage(draw)
+    #pipeline.append_stage(compress)
+    return pipeline   
 
 if __name__ == '__main__':
     pipeline = get_default_pipeline()

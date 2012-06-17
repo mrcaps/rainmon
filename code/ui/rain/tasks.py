@@ -57,7 +57,7 @@ def run_pipeline(outname, machines, attributes, startt, endt, \
     except:
         pass
 
-    pipeline = get_default_pipeline()
+    pipeline = get_current_pipeline()
     if skipstages != None:
         pipeline.set_skipstages(skipstages)
     input = {} 

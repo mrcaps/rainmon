@@ -236,8 +236,9 @@ Exec.analyze = function() {
 
     //Exec.loadRes();
     var statustxt = $("<span>").text("starting");
+    var loadimg = $("<img>").attr("src","media/img/loading.gif")
     var thisrun = $("<li>").css({"font-size":"0.8em"}).append(
-        $("<img>").attr("src","media/img/loading.gif"),
+        loadimg,
         $("<b>").text(" " + savename + ": "),
         $("<span>").text("status: "),
         statustxt
@@ -258,6 +259,7 @@ Exec.analyze = function() {
             var disp = $("<span>");
             disp.append($("<span>").text(lastd.status));
             if (lastd.detail) {
+                loadimg.attr("src","media/img/dialog-error.png");
                 disp.append($("<a>").attr("href","#").text(" [details]").click(function() {
                     alert(lastd.detail);
                 }));
@@ -270,6 +272,7 @@ Exec.analyze = function() {
                 $("#lst-saves").append(
                     $("<option>").text(savename).attr("value",savename)
                 );
+                $("#lst-saves").attr("value",savename);
                 wasFinished = true;
             }
         });
