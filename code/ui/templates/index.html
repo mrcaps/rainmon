@@ -229,7 +229,7 @@ Exec = {};
 Exec.analyze = function() {
     var attributes = Selector.getSelected("attrsel");
     var machines = Selector.getSelected("compsel");
-    var savename = $("#txt-savename").attr("value")
+    var savename = $("#txt-savename").attr("value");
 
     var parms = {
         outname: savename,
@@ -253,14 +253,17 @@ Exec.analyze = function() {
 
     //Exec.loadRes();
     var statustxt = $("<span>").text("starting");
+    var loadimg = $("<img>").attr("src","media/img/loading.gif")
     var thisrun = $("<li>").css({"font-size":"0.8em"}).append(
-        $("<img>").attr("src","media/img/loading.gif"),
+        loadimg,
         $("<b>").text(" " + savename + ": "),
         $("<span>").text("status: "),
         statustxt
     );
     $("#lst-running").append(thisrun);
 
+    //did we successfully finish?
+    var wasFinished = false;
     //wait for task completion
     var loadWait = setInterval(function() {
         Res.getStatus(savename, function(dta) {
@@ -268,21 +271,34 @@ Exec.analyze = function() {
             if (dta.length > 0) {
                 lastd = dta[dta.length-1];
             }
-            statustxt.text(lastd);
-            if (lastd.indexOf("Complete") > -1) {
+
+            statustxt.empty();
+            var disp = $("<span>");
+            disp.append($("<span>").text(lastd.status));
+            if (lastd.detail) {
+                loadimg.attr("src","media/img/dialog-error.png");
+                disp.append($("<a>").attr("href","#").text(" [details]").click(function() {
+                    alert(lastd.detail);
+                }));
+            }
+            statustxt.append(disp);
+
+            if (!wasFinished && (lastd.status.indexOf("Complete") > -1)) {
                 clearInterval(loadWait);
                 $(thisrun).remove();
                 $("#lst-saves").append(
                     $("<option>").text(savename).attr("value",savename)
                 );
+                $("#lst-saves").attr("value",savename);
+                wasFinished = true;
             }
         });
-    },1000);
+    },2000);
 }
 Exec.showrunit = function() {
     $("#btn-analyze").button().click(function() {
-        $("#txt-savename").attr("value", (new Date()).getTime() + "");
         Exec.analyze();
+        $("#txt-savename").attr("value", (new Date()).getTime() + "");
         $("#pane-running").slideDown();
     });
     $("#btn-usecache").button().click(function() {
@@ -471,6 +487,9 @@ $(window).resize(function() {
             Sizer.resizeq = [];
 
             mgr.remake();
+
+            //fix height of left selection area
+            $("#sel-area").accordion("resize");
         }
     },500);
 });

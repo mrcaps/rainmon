@@ -24,6 +24,7 @@ except:
             return target
         return decorator
 import sys
+import traceback
 
 IMPORTPATH = "../../"
 if IMPORTPATH not in sys.path:
@@ -70,7 +71,7 @@ def run_pipeline(outname, machines, attributes, startt, endt, \
     except:
         pass
 
-    pipeline = get_default_pipeline()
+    pipeline = get_current_pipeline()
     if skipstages != None:
         pipeline.set_skipstages(skipstages)
     input = {} 
@@ -91,10 +92,19 @@ def run_pipeline(outname, machines, attributes, startt, endt, \
         withnl = txt + "\n"
         sys.stdout.write(withnl)
         dump.printstatus(withnl)
-    output = pipeline.run(input,statuscb=statuswriter)
+
+    output = None
+    try:
+        output = pipeline.run(input,statuscb=statuswriter)
+    except:
+        exc_type, exc_value, exc_traceback = sys.exc_info()
+        dump.printstatus( \
+            traceback.format_exc().splitlines()[-1],
+            traceback.format_tb(exc_traceback))
     #print "Got output: ", output.keys()
     
-    dump.write(output)
+    if output != None:
+        dump.write(output)
     
     print "Analysis Done"
 

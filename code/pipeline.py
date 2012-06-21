@@ -299,29 +299,68 @@ class ResampleStage:
     '''
     def __init__(self, step=20):
         '''
-        @param step: timestep for resampling (in seconds)
+        @param step: timestep for resampling (in seconds).
+            Specify 0 estimate from data.
         '''
         self.step = step
-        pass
+
+    def most_common_step(self, ts):
+        '''
+        Obtain the most frequent time delta from a time list
+        @param ts the list of time points
+        '''
+        deltas = dict()
+        if len(ts) <= 1:
+            return None
+        for dx in xrange(1,len(ts)):
+            delta = ts[dx] - ts[dx-1]
+            if not delta in deltas:
+                deltas[delta] = 0
+            deltas[delta] += 1
+        maxn = 0
+        maxdelta = 0
+        for (delta, n) in deltas.iteritems():
+            if n > maxn:
+                maxdelta = delta
+                maxn = n
+        return maxdelta
 
     def run(self, input):
         '''
         Required input keys:
         data, ts_names
         '''
-        #take step input from the pipeline if available
-        if "tstep" in input and input["tstep"] != None:
-            self.step = int(float(input["tstep"]))
+        #smallest time in data
         mint = float("inf")
+        #largest time in data
         maxt = float("-inf")
+        #most common steps
+        mcses = []
         for data in input['data']:
             if data is not None and len(data[0]) > 0:
                 (ts, vs) = data
                 mint = min(mint, ts[0])
                 maxt = max(maxt, ts[len(ts)-1])
+
+                #estimate step from data
+                if self.step <= 0:
+                    mcs = self.most_common_step(ts)
+                    if None != mcs:
+                        mcses.append(mcs)
+
+        if len(mcses) != 0:
+            self.step = min(mcses)
+
+        if maxt < mint:
+            raise Exception("No data was obtained")
         
+        #take step input from the pipeline if available
+        if "tstep" in input and input["tstep"] != None:
+            self.step = int(float(input["tstep"]))
+
         print "Sampling from ", mint, maxt, self.step
-        tsample = numpy.arange(mint, maxt, self.step)
+        epsilon = numpy.finfo(numpy.float).eps * 1e4
+        tsample = numpy.arange(mint, maxt + epsilon, self.step)
 
         output_ts = []
         tsnames = []
@@ -342,7 +381,8 @@ class ResampleStage:
         output['step'] = self.step
         output['tsample'] = tsample
         output['data'] = output_ts
-        output['hosts'] = input['hosts']
+        if 'hosts' in input:
+            output['hosts'] = input['hosts']
 
         return output
 
@@ -379,7 +419,8 @@ class CypressStage:
         output['tsample'] = input['tsample']
         output['ts_names'] = input['ts_names']
         output['data'] = output_ts
-        output['hosts'] = input['hosts']
+        if 'hosts' in input:
+            output['hosts'] = input['hosts']
         return output
 
 class TrimStage:
@@ -569,8 +610,9 @@ class HeatmapStage:
 
         return output
 
-#Run SPIRIT on input["data"]
 class SpiritStage:
+    '''Run SPIRIT on input["data"]
+    '''
     def __init__(self, ispca=True,thresh=0.05,startm=3,ebounds=(0.9995, 1),vlambda=0.99,pcafixk=False):
         self.ispca = ispca
         self.thresh = thresh
@@ -615,8 +657,9 @@ class SpiritStage:
 
         return input
 
-# Run Kalman on Spirit Data
 class KalmanStage:
+    '''Run Kalman filter on summarized streams
+    '''
     def __init__(self,step_size=10,lookahead_flag=1):
         self.step_size = step_size
         # the flag with controls adaptive lookahead. Set it to "0" for fixed lookahead.
@@ -740,10 +783,13 @@ class DrawStage:
                 
         return input
 
-#compute reconstruction error
 class ErrorStage():
-    #addspikes: should spikes be added back in when calculating reconstruction error?
+    '''Compute reconstruction error
+    '''
     def __init__(self,addspikes=True):
+        '''
+        @param addspikes: should spikes be added back in when calculating reconstruction error?
+        '''
         self.addspikes = addspikes
 
     def run(self, input):
@@ -772,6 +818,9 @@ TSDBHOST = globalcfg["tsdbhost"]
 TSDBPORT = globalcfg["tsdbport"]
 
 def get_default_pipeline():
+    '''
+    Original pipeline used for evaluation in KDD2012 paper
+    '''
     cfg = getconfig()
     tmpdir = cfg["tmpdir"][3:]
     #crawler = OpenTSDBCrawlStage(TSDBHOST,TSDBPORT)
@@ -801,6 +850,36 @@ def get_default_pipeline():
     #pipeline.append_stage(draw)
     #pipeline.append_stage(compress)
     return pipeline
+
+def get_current_pipeline():
+    cfg = getconfig()
+    tmpdir = cfg["tmpdir"][3:]
+    crawler = CachingCrawlStage(os.path.join(tmpdir,"tsdb"),TSDBHOST,TSDBPORT)
+    #trim = TrimStage()
+    resample = ResampleStage(0)
+    cypress = CypressStage()
+    spirit = SpiritStage(ispca=False,thresh=0.01,ebounds=(0,1.1),startm=6)
+    kalman = KalmanStage()
+    normalize = NormalizeStage(True)
+    denormalize = NormalizeStage(False)
+    draw = DrawStage(tmpdir, False)
+    errorcalc = ErrorStage()
+    heatmap = HeatmapStage()
+    compress = CompressionStage(tmpdir)
+    pipeline = Pipeline()
+    pipeline.append_stage(crawler)
+    #pipeline.append_stage(trim)
+    pipeline.append_stage(resample)
+    pipeline.append_stage(cypress)
+    pipeline.append_stage(normalize)
+    pipeline.append_stage(spirit)
+    pipeline.append_stage(heatmap)
+    pipeline.append_stage(kalman)
+    pipeline.append_stage(denormalize)
+    #pipeline.append_stage(errorcalc)
+    #pipeline.append_stage(draw)
+    #pipeline.append_stage(compress)
+    return pipeline   
 
 if __name__ == '__main__':
     pipeline = get_default_pipeline()
@@ -851,8 +930,3 @@ if __name__ == '__main__':
 
     input['metrics'] = metrics
     pipeline.run(input)
-    
-    # input['metrics'] = ['']
-    # for metric in metrics:
-    #     input['metrics'][0] = metric
-    #     pipeline.run(input)

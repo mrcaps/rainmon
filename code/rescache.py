@@ -35,32 +35,38 @@ class Cache:
         '''
         self.rootdir = os.path.abspath(rootdir)
         self.SFX = ".json"
-        self.statusloc = os.path.join(self.rootdir,"STATUS.txt")
+        self.statusloc = os.path.join(self.rootdir,"STATUS.json")
 
     def dump(self, name, obj):
         '''
         dump {obj} to the backing cache with key {name}
         '''
-        fp = open(os.path.join(self.rootdir, name + self.SFX),"w")
-        json.dump(obj, fp)
-        fp.close()
+        with open(os.path.join(self.rootdir, name + self.SFX),"w") as fp:
+            json.dump(obj, fp)
 
-    def printstatus(self, txt):
+    def printstatus(self, txt, detail=None):
         '''
         write {txt} to the status output of the result
+        @param txt: status text
+        @param detail: additional detail
         '''
-        fp = open(self.statusloc,"a")
-        fp.write(txt)
-        fp.close()
+        todump = {}
+        todump["status"] = txt
+        if detail != None:
+            todump["detail"] = detail
+
+        with open(self.statusloc,"a") as fp:
+            json.dump(todump, fp)
+            fp.write("\n")
 
     def getstatus(self):
         '''
         Read the contents of the status file (for checking analysis status)
         '''
-        fp = open(self.statusloc,"r")
         results = []
-        for line in fp:
-            results.append(line.strip())
+        with open(self.statusloc,"r") as fp:
+            for line in fp:
+                results.append(json.loads(line))
         return results
 
     def load(self, name):
