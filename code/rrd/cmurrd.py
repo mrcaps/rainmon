@@ -18,6 +18,8 @@ import os
 import time
 import random
 import rrdtool
+import math
+
 IMPORTPATH = "../ganglia"
 if IMPORTPATH not in sys.path:
         sys.path.append(IMPORTPATH)
@@ -69,7 +71,7 @@ class FlatQuery(TSDBQuery):
 
 	#Format res (as obtained from fetchmetrics) in OpenTSDB response text
 	# with the given host=hostname
-	def format_tsdb(self, res, hostname):
+	def format_tsdb(self, res, hostname, skipnan=True):
 		lines = []
 		metrics = res["mnames"]
 		times = res["times"]
@@ -78,7 +80,8 @@ class FlatQuery(TSDBQuery):
 				datum = res["dta"][metricdx][i]
 				if datum == None:
 					datum = float("NaN")
-				lines.append("%s %d %f host=%s" % (metric, times[i], datum, hostname))
+				if not (skipnan and math.isnan(datum)):
+					lines.append("%s %d %f host=%s" % (metric, times[i], datum, hostname))
 		return lines
 
 	#Get results in OpenTSDB format - same interface as TSDBQuery
