@@ -87,6 +87,37 @@ def plot_cloud_disk():
 
     show()
 
+#Show a sample of dimensionality reduction
+def plot_dim_reduction():
+    ca = Cache("cache-cloud-disk-oct12-oct16")
+
+    fig = figure(figsize=(6.3,3.75))
+
+    nplots = 6
+    subplot(nplots,1,1)
+    (xs,ys) = ca.data("hv.0")
+    xticks([])
+    yticks([])
+    plot(xs,ys,linewidth=2)
+    xlmin, xlmax = xlim()
+    sample = ((xlmin+xlmax)*0.5, xlmax)
+    xlim(sample)
+    common_ylim = 350
+    for i in xrange(2,nplots+1):
+        subplot(nplots,1,i)
+        (xs,ys) = ca.data("cloud%d.iostat.disk.read_requests.smooth" % (i-1))
+        plot(xs,ys,linewidth=2)
+        xlim(sample)
+        ylim(0,common_ylim)
+        yticks([])
+        if i == nplots:
+            ca.dateify(DayLocator(interval=1))
+        else:
+            xticks([])
+
+    show()
+
+
 #Scatterplot of disk data for multiple groups of nodes
 # unpack cache-machine-groups.tar.gz to plot
 def plot_cloud_disk2():
@@ -346,3 +377,5 @@ if __name__ == '__main__':
         plot_cloud_disk2()
     elif pname == "fig13":
         plot_psu_qatar()
+    elif pname == "dim-red-example":
+        plot_dim_reduction()
