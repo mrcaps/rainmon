@@ -34,6 +34,11 @@ class Cache:
         @param rootdir: the path to the cache (including its own dir name)
         '''
         self.rootdir = os.path.abspath(rootdir)
+        if not os.path.exists(self.rootdir):
+            try:
+                os.makedirs(self.rootdir)
+            except:
+                pass
         self.SFX = ".json"
         self.statusloc = os.path.join(self.rootdir,"STATUS.json")
 
@@ -93,7 +98,7 @@ class Cache:
         self.dump("index", {
             "mint": output["mint"],
             "maxt": output["maxt"],
-            "step": output["maxt"],
+            "step": output["step"],
             "ts_names": tsnames, 
             "hiddenvars": len(hvs)
         })
