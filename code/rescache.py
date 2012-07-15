@@ -90,7 +90,10 @@ class Cache:
         '''
         cache pipeline output {output}
         '''
-        tsnames = output["ts_names"]
+
+        def normname(n):
+            return n.replace("/","_")
+        tsnames = [normname(n) for n in output["ts_names"]]
         hvs = output["hvlog"]
         if hvs == None:
             hvs = []
@@ -111,7 +114,7 @@ class Cache:
 
         data = output["data"]
         for i in xrange(len(tsnames)):
-            name = tsnames[i]
+            name = normname(tsnames[i])
             self.dump(name + ".smooth", list(data[i][0]))
             self.dump(name + ".spikes", list(data[i][1]))
             self.dump(name + ".residual", list(data[i][2]))

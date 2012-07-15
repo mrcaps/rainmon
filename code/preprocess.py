@@ -122,7 +122,10 @@ class LinearNormalize(Transform):
     def apply(self, v):
         self.maxvpre = max(v)
         self.minvpre = min(v)
-        return (v-self.minvpre)/(self.maxvpre-self.minvpre)*self.hi
+        divider = (self.maxvpre-self.minvpre)
+        if divider == 0:
+            divider = 1
+        return (v-self.minvpre)/divider*self.hi
     def unapply(self,v):
         if self.maxvpre is None:
             print "Must normalize in the forward direction before reversing!"
@@ -143,7 +146,8 @@ NormalTransform = LinearNormalize
 BurstyTransform = LogTransform
 
 transforms = dict()
-transforms["None"] =                            Transform()
+#transforms["None"] =                            Transform()
+transforms["None"] =                            LinearNormalize(0,5)
 transforms["iostat.disk.read_requests"] =       BurstyTransform(0,1e2)
 transforms["iostat.disk.write_requests"] =      BurstyTransform(0,1e2)
 transforms["iostat.disk.msec_write"] =          BurstyTransform(0,1e4)
