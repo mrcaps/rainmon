@@ -14,7 +14,11 @@
 #   without specific prior written permission.
 
 from numpy import *
+
 import matplotlib.mlab as mlab
+
+if not hasattr(mlab, "PCA"):
+    from lib import mlab
 
 class PCACenterFix(mlab.PCA):
     '''

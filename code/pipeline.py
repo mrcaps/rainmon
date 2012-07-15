@@ -536,6 +536,31 @@ class NormalizeStage:
 
         return output
 
+def compat_savez_compressed(file, **kwargs):
+    """
+    Version of savez_compressed for older versions of numpy
+    Only deal with kwargs
+
+    Portions used under numpy BSD license
+    """
+    import zipfile
+    import numpy.lib.format
+    import tempfile
+
+    if not file.endswith(".npz"):
+        file = file + ".npz"
+
+    zip = zipfile.ZipFile(file, mode="w", compression=zipfile.ZIP_STORED)
+    tmpdir = tempfile.gettempdir()
+
+    for k, v in kwargs.iteritems():
+        fullpath = os.path.join(tmpdir, k + ".npy")
+        with open(fullpath,"wb") as fp:
+            numpy.lib.format.write_array(fp, np.asanyarray(v))
+        zip.write(fullpath, arcname=k + ".npy")
+
+    zip.close()
+
 class CompressionStage:
     def __init__(self, outdir):
         self.outdir = outdir
@@ -571,7 +596,12 @@ class CompressionStage:
         if "center" in input:
             saveargs["center"] = input["center"]
 
-        np.savez_compressed(os.path.join(self.outdir, "compressed"), **saveargs)
+        outpath = os.path.join(self.outdir, "compressed")
+        if not hasattr(np, "savez_compressed"):
+            print "WARNING: no savez_compressed (old version of numpy)"
+            compat_savez_compressed(outpath, **saveargs)
+        else:
+            np.savez_compressed(outpath, **saveargs)
 
         return input
 

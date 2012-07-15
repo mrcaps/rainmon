@@ -25,23 +25,29 @@ class Decompressor():
 	def decompress(self):
 		cont = np.load(self.target)
 
+		def hasit(name):
+			try:
+				return name in cont
+			except KeyError:
+				return name in cont.files
+
 		#reconstruction
-		assert ("hvs" in cont), "Decompression error: no hidden variables"
-		assert ("proj" in cont), "Decompression error: no weight matrix"
+		assert hasit("hvs"), "Decompression error: no hidden variables"
+		assert hasit("proj"), "Decompression error: no weight matrix"
 		recon = np.dot(cont["hvs"].T, cont["proj"])
 
-		if "center" in cont:
+		if hasit("center"):
 			recon *= cont["center"][0] 
 			recon += cont["center"][1]
 
 		recon = recon.T
 
-		if "xforms" in cont:
+		if hasit("xforms"):
 			assert recon.shape[0] == len(cont["xforms"])
 			for rdx in xrange(recon.shape[0]):
 				recon[rdx,:] = cont["xforms"][rdx].unapply(recon[rdx,:])
 
-		if "spikes" in cont:
+		if hasit("spikes"):
 			recon += cont["spikes"]
 
 		return recon

@@ -61,9 +61,12 @@ class TestCompression(unittest.TestCase):
         decomp = Decompressor(target)
         recon = decomp.decompress()
 
+        errthresh = 0.65
+
         for tsn in xrange(recon.shape[0]):
             err = recon_error(output["data"][tsn][-1], recon[tsn,:])
-            self.assertTrue(err[0] > 0.7, "Expected stream reconstruction accuracy > 0.7")
+            self.assertTrue(err[0] > errthresh, 
+                "Expected stream reconstruction accuracy > %f" % errthresh)
 
             #to examine reconstruction versus original:
             examine = False
