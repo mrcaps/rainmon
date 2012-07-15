@@ -134,7 +134,9 @@ class RRDGroup:
             if n.startswith("/"):
                 n = n[1:]
 
-            compnames.append(n.replace("/","."))
+            compnames.append(n)
+
+        compnames.sort()
 
         attrnames = list(self.get_shared())
         attrnames.sort()
