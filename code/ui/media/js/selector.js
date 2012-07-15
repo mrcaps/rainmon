@@ -64,7 +64,7 @@ var SOURCES = [
         compcols:4,
         cloudifyNames:true
     },
-    {host:"172.19.149.159",port:8000,
+    {host:"172.19.149.159",port:8124,
         name:"CMU.net RRD",
         getAttrNames: function() {
             var names = ["median","loss","uptime"];

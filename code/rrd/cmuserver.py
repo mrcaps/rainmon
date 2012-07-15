@@ -51,7 +51,7 @@ Protocol = "HTTP/1.0"
 HandlerClass.protocol_version = Protocol
 
 if __name__ == '__main__':
-    httpd = ServerClass(("0.0.0.0",8000), HandlerClass)
+    httpd = ServerClass(("0.0.0.0",8124), HandlerClass)
     #Try me with 
     #http://<ip>:8000
     #/q?start=2011/12/11-8:30:00&end=2012/01/20-8:30:00&m=sum:median{host=LocalMachine}
