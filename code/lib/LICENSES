@@ -1,5 +1,6 @@
 Support tools from public packages:
 
-mlab.py: matplotlib
+mlab.py: matplotlib -
+http://matplotlib.sourceforge.net/users/license.html
 
 deep_eq.py: see file

@@ -25,48 +25,49 @@ import math
 import matplotlib.pyplot as plt
 import numpy as np
 
-f = open('err_recon1', 'r')
-results = [[],]
-index = []
-i = 0
-for l in f:
-    if l.startswith('-'):
-        i += 1
-        index.append(l[1:])
-        results.append([])
-    else:
-        results[i].append(float(l))
-f.close()
+if __name__ == "__main__":
+    f = open('err_recon1', 'r')
+    results = [[],]
+    index = []
+    i = 0
+    for l in f:
+        if l.startswith('-'):
+            i += 1
+            index.append(l[1:])
+            results.append([])
+        else:
+            results[i].append(float(l))
+    f.close()
 
-mean_arr = []
-std_arr = []
-for i in range(1, len(results)):
-    mean = 0
-    for v in results[i]:
-        mean += v
-    mean /= len(results[i])
-    std = 0
-    for v in results[i]:
-        std += (v - mean) * (v - mean)
-    std = math.sqrt(std)
-    mean_arr.append(mean)
-    std_arr.append(std)
+    mean_arr = []
+    std_arr = []
+    for i in range(1, len(results)):
+        mean = 0
+        for v in results[i]:
+            mean += v
+        mean /= len(results[i])
+        std = 0
+        for v in results[i]:
+            std += (v - mean) * (v - mean)
+        std = math.sqrt(std)
+        mean_arr.append(mean)
+        std_arr.append(std)
 
-print mean_arr
-width = 0.35
-ind = np.arange(len(mean_arr))
-#plt.clf()
-fig = plt.figure()
-fig.subplots_adjust(bottom=0.18)
-#fig = plt.figure()
-#ax1 = fig.add_subplot(111)
-p1 = plt.bar(ind, mean_arr, width, color='r', yerr=std_arr)
-plt.ylabel('Reconstruction Accuracy', fontsize=22)
-plt.xlabel('Time Scale (Minutes)', fontsize=20)
-#plt.title('Scores by group and gender')
-plt.ylim((0.6, 1))
-plt.xticks(ind+width/2., index, fontsize=22)
-plt.yticks(np.arange(0.6,1.01,0.1), fontsize=22)
-#plt.legend( (p1[0]), ('Reconstruction Error') )
-#plt.show()
-plt.savefig("timescale.png")
+    print mean_arr
+    width = 0.35
+    ind = np.arange(len(mean_arr))
+    #plt.clf()
+    fig = plt.figure()
+    fig.subplots_adjust(bottom=0.18)
+    #fig = plt.figure()
+    #ax1 = fig.add_subplot(111)
+    p1 = plt.bar(ind, mean_arr, width, color='r', yerr=std_arr)
+    plt.ylabel('Reconstruction Accuracy', fontsize=22)
+    plt.xlabel('Time Scale (Minutes)', fontsize=20)
+    #plt.title('Scores by group and gender')
+    plt.ylim((0.6, 1))
+    plt.xticks(ind+width/2., index, fontsize=22)
+    plt.yticks(np.arange(0.6,1.01,0.1), fontsize=22)
+    #plt.legend( (p1[0]), ('Reconstruction Error') )
+    #plt.show()
+    plt.savefig("timescale.png")

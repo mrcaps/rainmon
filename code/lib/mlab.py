@@ -3,6 +3,8 @@
 Numerical python functions written for compatability with MATLAB
 commands with the same names.
 
+Used under matplotlib license (see LICENSES)
+
 """
 
 from __future__ import division

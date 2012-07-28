@@ -157,151 +157,153 @@ def run_abilene(horizon):
 	input['data'] = X
 	return pipe.run(input)
 
-dataset = "abilene"
 
-datacache = os.path.join(outdir,"predictcompare1.npz")
-if os.path.exists(datacache):
-	save = np.load(datacache)
-	hvs_predict = save["hvs_predict"]
-	hvs = save["hvs"]
-	max_ind = save["max_ind"]
-	mse_kalman = save["mse_kalman"]
-	dta = save["dta"]
-	predicted_const = save["predicted_const"]
-	predicted_VAR = save["predicted_VAR"]
-	mse_VAR = save["mse_VAR"]
-	mse_const = save["mse_const"]
-else:
-	if dataset == "hadoop":
-		horizon = 12
-		output = run_hadoop(horizon)
-	elif dataset == "abilene":
-		horizon = 24
-		output = run_abilene(horizon)
+if __name__ == "__main__":
+	dataset = "abilene"
+
+	datacache = os.path.join(outdir,"predictcompare1.npz")
+	if os.path.exists(datacache):
+		save = np.load(datacache)
+		hvs_predict = save["hvs_predict"]
+		hvs = save["hvs"]
+		max_ind = save["max_ind"]
+		mse_kalman = save["mse_kalman"]
+		dta = save["dta"]
+		predicted_const = save["predicted_const"]
+		predicted_VAR = save["predicted_VAR"]
+		mse_VAR = save["mse_VAR"]
+		mse_const = save["mse_const"]
 	else:
-		print "Unknown dataset: %s" % dataset
+		if dataset == "hadoop":
+			horizon = 12
+			output = run_hadoop(horizon)
+		elif dataset == "abilene":
+			horizon = 24
+			output = run_abilene(horizon)
+		else:
+			print "Unknown dataset: %s" % dataset
 
-	hvs = output["hvlog"]
-	max_ind = np.max(output["mlog"])
-	dta = hvs[0:max_ind,:]
-	dta = dta.transpose()
+		hvs = output["hvlog"]
+		max_ind = np.max(output["mlog"])
+		dta = hvs[0:max_ind,:]
+		dta = dta.transpose()
 
-	siz = dta.shape
-	T = 50
-	i = T
+		siz = dta.shape
+		T = 50
+		i = T
 
-	mse_const = np.zeros(siz[0])
-	mse_VAR = np.zeros(siz[0])
+		mse_const = np.zeros(siz[0])
+		mse_VAR = np.zeros(siz[0])
 
-	predicted_const = np.copy(dta)
-	predicted_VAR = np.copy(dta)
+		predicted_const = np.copy(dta)
+		predicted_VAR = np.copy(dta)
 
-	pred_const = ConstantPredictor(dta)
+		pred_const = ConstantPredictor(dta)
 
-	while(i < siz[0]-1):
-		if (i+horizon+1) > siz[0]:
-			horizon = siz[0]-1-i
-		predicted_const[i+1:i+horizon+1], mse_const[i+1:i+horizon+1] = pred_const.outpredict(i,horizon)
-		i = i+horizon
+		while(i < siz[0]-1):
+			if (i+horizon+1) > siz[0]:
+				horizon = siz[0]-1-i
+			predicted_const[i+1:i+horizon+1], mse_const[i+1:i+horizon+1] = pred_const.outpredict(i,horizon)
+			i = i+horizon
 
-	i = T
-	while(i < siz[0]-1):
-		temp = dta[i-T:i,:]
-		pred_VAR = VARPredictor(temp)
-		if (i+horizon+1) > siz[0]:
-			horizon = siz[0]-1-i
+		i = T
+		while(i < siz[0]-1):
+			temp = dta[i-T:i,:]
+			pred_VAR = VARPredictor(temp)
+			if (i+horizon+1) > siz[0]:
+				horizon = siz[0]-1-i
 
-		predicted_VAR[i+1:i+horizon+1] = pred_VAR.outpredict(T,horizon)
-		mse_VAR[i+1:i+horizon+1] = np.mean((predicted_VAR[i+1:i+horizon+1]-dta[i+1:i+horizon+1])**2,1)
-		i = i+horizon
+			predicted_VAR[i+1:i+horizon+1] = pred_VAR.outpredict(T,horizon)
+			mse_VAR[i+1:i+horizon+1] = np.mean((predicted_VAR[i+1:i+horizon+1]-dta[i+1:i+horizon+1])**2,1)
+			i = i+horizon
 
-	hvs_predict = output["predict"]
-	hvs = output["hvlog"]
-	max_ind = np.max(output["mlog"])
-	mse_kalman = np.mean((hvs[0:max_ind,:]-hvs_predict)**2,0)
+		hvs_predict = output["predict"]
+		hvs = output["hvlog"]
+		max_ind = np.max(output["mlog"])
+		mse_kalman = np.mean((hvs[0:max_ind,:]-hvs_predict)**2,0)
 
-	dta = dta[T+1:,:]
-	predicted_const = predicted_const[T+1:,:]
-	predicted_VAR = predicted_VAR[T+1:,:]
-	mse_VAR = mse_VAR[T+1:]
-	mse_const = mse_const[T+1:]
-	mse_kalman = mse_kalman[T+1:]
+		dta = dta[T+1:,:]
+		predicted_const = predicted_const[T+1:,:]
+		predicted_VAR = predicted_VAR[T+1:,:]
+		mse_VAR = mse_VAR[T+1:]
+		mse_const = mse_const[T+1:]
+		mse_kalman = mse_kalman[T+1:]
 
-	np.savez(datacache, hvs_predict=hvs_predict, hvs=hvs, \
-		max_ind=max_ind, mse_kalman=mse_kalman, dta=dta, \
-		predicted_const=predicted_const, predicted_VAR=predicted_VAR, \
-		mse_VAR=mse_VAR, mse_const=mse_const)
+		np.savez(datacache, hvs_predict=hvs_predict, hvs=hvs, \
+			max_ind=max_ind, mse_kalman=mse_kalman, dta=dta, \
+			predicted_const=predicted_const, predicted_VAR=predicted_VAR, \
+			mse_VAR=mse_VAR, mse_const=mse_const)
 
-saveall = False
+	saveall = False
 
-for column in xrange(len(hvs_predict)):
+	for column in xrange(len(hvs_predict)):
 
-	hv = hvs[column]
-	hv_predict = hvs_predict[column]
-	fig = pylab.figure(figsize=(6,4.5))
-	fig.subplots_adjust(left=0.15,bottom=0.14,top=0.92,right=0.95)
+		hv = hvs[column]
+		hv_predict = hvs_predict[column]
+		fig = pylab.figure(figsize=(6,4.5))
+		fig.subplots_adjust(left=0.15,bottom=0.14,top=0.92,right=0.95)
+		pylab.clf()
+		#pylab.title("Predicted hidden variable " + str(column))
+		pylab.subplot(111)
+		p1 = pylab.plot(hv,'r-',linewidth=2, color=(1.0, 0.5, 0.5))
+		p2 = pylab.plot(hv_predict,'b--',linewidth=2)
+		pylab.xlim(0,hv.size)
+		pylab.ylabel('Value')
+		pylab.xlabel('Time Tick')
+		pylab.legend(('Hidden Variable 1','Kalman Prediction'),loc=(0.08,0.8))
+		if saveall:
+			pylab.savefig(os.path.join(outdir, "kalman_predict_hv_%d.png" % column))
+		if column == 0:
+			pylab.savefig(os.path.join(outdir, "kalman_predict_hv_%d.pdf" % column))
+			pylab.savefig(os.path.join(outdir, "kalman_predict_hv_%d.eps" % column))
+
+		pylab.clf()
+		pylab.subplot(111)
+		p1 = pylab.plot(dta[:,column],'r-',linewidth=2, color=(1.0, 0.5, 0.5))
+		p2 = pylab.plot(predicted_const[:,column],'b--',linewidth=2)
+		pylab.xlim(0,mse_VAR.size)
+		if saveall:
+			pylab.legend(('Spirit Coefficients','Constant Predicted Coefficients'))
+			pylab.savefig(os.path.join(outdir, "const_predict_hv_%d.png" % column))
+
+		pylab.clf()
+		pylab.plot(dta[:,column],'r-',linewidth=2, color=(1.0, 0.5, 0.5))
+		pylab.plot(predicted_VAR[:,column],'b--',linewidth=2)
+		pylab.xlim(0,mse_VAR.size)
+		if saveall:
+			pylab.legend(('Spirit Coefficients','VAR Predicted Coefficients'))
+			pylab.savefig(os.path.join(outdir, "VAR_predict_hv_%d.png" % column))
+
 	pylab.clf()
-	#pylab.title("Predicted hidden variable " + str(column))
+	#pylab.title("Mean Squared Prediction Error ")
 	pylab.subplot(111)
-	p1 = pylab.plot(hv,'r-',linewidth=2, color=(1.0, 0.5, 0.5))
-	p2 = pylab.plot(hv_predict,'b--',linewidth=2)
-	pylab.xlim(0,hv.size)
-	pylab.ylabel('Value')
+	pylab.plot(mse_const,'g--',linewidth=2)
+	pylab.plot(mse_VAR,'r',linewidth=2, color=(1.0, 0.5, 0.5))
+	pylab.plot(mse_kalman,'b',linewidth=2)
+	pylab.xlim(0,mse_VAR.size)
+	pylab.legend(('Const.','VAR','Kalman'))
 	pylab.xlabel('Time Tick')
-	pylab.legend(('Hidden Variable 1','Kalman Prediction'),loc=(0.08,0.8))
-	if saveall:
-		pylab.savefig(os.path.join(outdir, "kalman_predict_hv_%d.png" % column))
-	if column == 0:
-		pylab.savefig(os.path.join(outdir, "kalman_predict_hv_%d.pdf" % column))
-		pylab.savefig(os.path.join(outdir, "kalman_predict_hv_%d.eps" % column))
+	pylab.ylabel('Mean Squared Error')
+	pylab.savefig(os.path.join(outdir, "kalman_comparison.eps"))
+	pylab.savefig(os.path.join(outdir, "kalman_comparison.pdf"))
 
 	pylab.clf()
-	pylab.subplot(111)
-	p1 = pylab.plot(dta[:,column],'r-',linewidth=2, color=(1.0, 0.5, 0.5))
-	p2 = pylab.plot(predicted_const[:,column],'b--',linewidth=2)
-	pylab.xlim(0,mse_VAR.size)
-	if saveall:
-		pylab.legend(('Spirit Coefficients','Constant Predicted Coefficients'))
-		pylab.savefig(os.path.join(outdir, "const_predict_hv_%d.png" % column))
+	ax = pylab.subplot(111)
 
-	pylab.clf()
-	pylab.plot(dta[:,column],'r-',linewidth=2, color=(1.0, 0.5, 0.5))
-	pylab.plot(predicted_VAR[:,column],'b--',linewidth=2)
-	pylab.xlim(0,mse_VAR.size)
-	if saveall:
-		pylab.legend(('Spirit Coefficients','VAR Predicted Coefficients'))
-		pylab.savefig(os.path.join(outdir, "VAR_predict_hv_%d.png" % column))
+	dmin = min(min(mse_const),min(mse_VAR),min(mse_kalman))
+	dmax = max(max(mse_const),max(mse_VAR),max(mse_kalman))
+	x = np.linspace(dmin,dmax)
+	maxx = 0.025
+	if maxx != None:
+		x = np.linspace(0,maxx)
+		np.append(x,[dmax])
+	pylab.plot(x,ECDF(mse_const)(x),'g--',linewidth=2)
+	pylab.plot(x,ECDF(mse_VAR)(x),'r',linewidth=2, color=(1.0, 0.5, 0.5))
+	pylab.plot(x,ECDF(mse_kalman)(x),'b',linewidth=2)
+	pylab.xlim((0,maxx))
+	pylab.legend(('Constant','VAR','Kalman'),loc='lower right')
+	pylab.xlabel('Mean Squared Error')
+	pylab.ylabel('Cumulative Frequency')
 
-pylab.clf()
-#pylab.title("Mean Squared Prediction Error ")
-pylab.subplot(111)
-pylab.plot(mse_const,'g--',linewidth=2)
-pylab.plot(mse_VAR,'r',linewidth=2, color=(1.0, 0.5, 0.5))
-pylab.plot(mse_kalman,'b',linewidth=2)
-pylab.xlim(0,mse_VAR.size)
-pylab.legend(('Const.','VAR','Kalman'))
-pylab.xlabel('Time Tick')
-pylab.ylabel('Mean Squared Error')
-pylab.savefig(os.path.join(outdir, "kalman_comparison.eps"))
-pylab.savefig(os.path.join(outdir, "kalman_comparison.pdf"))
-
-pylab.clf()
-ax = pylab.subplot(111)
-
-dmin = min(min(mse_const),min(mse_VAR),min(mse_kalman))
-dmax = max(max(mse_const),max(mse_VAR),max(mse_kalman))
-x = np.linspace(dmin,dmax)
-maxx = 0.025
-if maxx != None:
-	x = np.linspace(0,maxx)
-	np.append(x,[dmax])
-pylab.plot(x,ECDF(mse_const)(x),'g--',linewidth=2)
-pylab.plot(x,ECDF(mse_VAR)(x),'r',linewidth=2, color=(1.0, 0.5, 0.5))
-pylab.plot(x,ECDF(mse_kalman)(x),'b',linewidth=2)
-pylab.xlim((0,maxx))
-pylab.legend(('Constant','VAR','Kalman'),loc='lower right')
-pylab.xlabel('Mean Squared Error')
-pylab.ylabel('Cumulative Frequency')
-
-pylab.savefig(os.path.join(outdir, "kalman_comparison_cdf.eps"))
-pylab.savefig(os.path.join(outdir, "kalman_comparison_cdf.pdf"))
+	pylab.savefig(os.path.join(outdir, "kalman_comparison_cdf.eps"))
+	pylab.savefig(os.path.join(outdir, "kalman_comparison_cdf.pdf"))

@@ -114,10 +114,11 @@ def run_pipeline(outname, machines, attributes, startt, endt, \
 def get_savenames():
     root = getcachedir("")
     saves = []
-    for d in os.listdir(root):
-        abspath = os.path.join(root,d)
-        if os.path.isdir(abspath):
-            saves.append(d)
+    if os.path.exists(root):
+        for d in os.listdir(root):
+            abspath = os.path.join(root,d)
+            if os.path.isdir(abspath):
+                saves.append(d)
     return saves
 
 @task()
