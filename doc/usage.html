@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="pandoc">
+  <title></title>
+  <!--[if lt IE 9]>
+    <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+  <link href='http://fonts.googleapis.com/css?family=Ubuntu' rel='stylesheet' type='text/css'>
+  <link rel="stylesheet" href="src/styles.css">
+</head>
+<body>
+
+<div class="fixednav" style="position: fixed; left: 0px; top: 15px; width: 150px;">
+  <div class="navtitle">Contents</div>
+  <div><a href="index.html">Welcome</a></div>
+  <div><a href="README.html">Readme</a></div>
+  <div><a href="setup.html">Setup</a></div>
+  <div class="sub"><a href="setup-ubuntu.html">Ubuntu</a></div>
+  <div class="sub"><a href="setup-windows.html">Windows</a></div>
+  <div class="sub"><a href="setup-distributed.html">Distributed</a></div>
+  <div><a href="usage.html">Usage</a></div>
+  <div><a href="datasources.html">Data Sources</a></div>
+  <div class="sub"><a href="datasources-rrd.html">RRD</a></div>
+</div>
+<div style="margin-left: 150px">
+  <h2 id="using-rainmon">Using RainMon</h2>
+  <p>Once the <a href="setup.html">setup steps</a> are done and a data source is set up, here is a quick guide to how to perform a full analysis.</p>
+  <h3 id="running-the-analysis">Running the Analysis</h3>
+  <p>First, select a data source:</p>
+  <figure>
+  <img src="img/guide-1.png" alt="Selecting a data source"><figcaption>Selecting a data source</figcaption>
+  </figure>
+  <p>then, select the machines/nodes to analyze. The defaults for this area are taken from the data source setup.</p>
+  <figure>
+  <img src="img/guide-2.png" alt="Selecting machines/nodes"><figcaption>Selecting machines/nodes</figcaption>
+  </figure>
+  <p>then, select some metrics to analyze. If operating in streaming mode, having proper normalization for the data source is important.</p>
+  <figure>
+  <img src="img/guide-3.png" alt="Selecting metrics"><figcaption>Selecting metrics</figcaption>
+  </figure>
+  <p>then, select the time range the analysis should be run over. Clicking the &quot;...&quot; buttons will bring up a date selection dialog. To use downsampling from the RRD backend, specify a ''step'' (in seconds) that will be the interval between sampled time ticks.</p>
+  <figure>
+  <img src="img/guide-4.png" alt="Selecting time range"><figcaption>Selecting time range</figcaption>
+  </figure>
+  <p>Finally, to run the analysis, choose a name for saving the analysis and click &quot;Run analysis.&quot; A status indicator should appear, and when done the name will appear in the list of saved analyses.</p>
+  <figure>
+  <img src="img/guide-5.png" alt="Choosing a name"><figcaption>Choosing a name</figcaption>
+  </figure>
+  <figure>
+  <img src="img/guide-6.png" alt="Running the analysis"><figcaption>Running the analysis</figcaption>
+  </figure>
+  <figure>
+  <img src="img/guide-7.png" alt="Analysis done"><figcaption>Analysis done</figcaption>
+  </figure>
+  <h3 id="viewing-the-results">Viewing the Results</h3>
+  <p>When an analysis result is selected from the list, it will be loaded and the first hidden variable (trend) as a function of time will appear at the top of the screen.</p>
+  <figure>
+  <img src="img/guide-10.png" alt="First hidden variable"><figcaption>First hidden variable</figcaption>
+  </figure>
+  <p>To drill down into the behavior of individual nodes, the scatterplot shows which streams are behaving similary by plotting each stream as a single point in two dimensions. Points are color-coded by which metric they are. Hover over a point to see the name of the node. Here are two examples, the left from the CMU.net dataset and the right from the Hadoop dataset:</p>
+  <p><img src="img/guide-9.png" alt="Scatterplot"> <img src="img/dots-analysis-uiscatter.png" alt="Example from home page"></p>
+  <p>To look at an individual stream, start typing in the &quot;Plots&quot; box, and available stream names from the analysis will appear.</p>
+  <figure>
+  <img src="img/guide-8.png" alt="Selecting a stream"><figcaption>Selecting a stream</figcaption>
+  </figure>
+  <p>Click &quot;Add plot&quot; to add it to the display. To zoom into any plot in the time dimension, drag a time range to explore:</p>
+  <figure>
+  <img src="img/guide-11.png" alt="Zooming in time"><figcaption>Zooming in time</figcaption>
+  </figure>
+  <p>To reorder plots, drag the entire plot around, or drag it to the trash bin.</p>
+  <figure>
+  <img src="img/guide-12.png" alt="Move plots"><figcaption>Move plots</figcaption>
+  </figure>
+</div>
+
+</body>
+</html>

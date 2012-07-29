@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="pandoc">
+  <title></title>
+  <!--[if lt IE 9]>
+    <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+  <link href='http://fonts.googleapis.com/css?family=Ubuntu' rel='stylesheet' type='text/css'>
+  <link rel="stylesheet" href="src/styles.css">
+</head>
+<body>
+
+<div class="fixednav" style="position: fixed; left: 0px; top: 15px; width: 150px;">
+  <div class="navtitle">Contents</div>
+  <div><a href="index.html">Welcome</a></div>
+  <div><a href="README.html">Readme</a></div>
+  <div><a href="setup.html">Setup</a></div>
+  <div class="sub"><a href="setup-ubuntu.html">Ubuntu</a></div>
+  <div class="sub"><a href="setup-windows.html">Windows</a></div>
+  <div class="sub"><a href="setup-distributed.html">Distributed</a></div>
+  <div><a href="usage.html">Usage</a></div>
+  <div><a href="datasources.html">Data Sources</a></div>
+  <div class="sub"><a href="datasources-rrd.html">RRD</a></div>
+</div>
+<div style="margin-left: 150px">
+  <h1 id="setting-up-the-project">Setting up the project</h1>
+  <h2 id="check-out-the-source">Check out the source</h2>
+  <p>First, get a copy of the source: This assumes a copy of the source code:</p>
+  <pre><code>git clone https://github.com/mrcaps/rainmon
+  cd rainmon
+  mkdir etc/tmp</code></pre>
+  <h2 id="follow-platform-specific-instructions">Follow platform-specific instructions</h2>
+  <ul>
+  <li>Ubuntu 12.04: <a href="setup-ubuntu.html">setup-ubuntu</a></li>
+  <li>Windows 7: <a href="setup-windows.html">setup-windows</a></li>
+  </ul>
+  <h2 id="see-a-sample-analysis">See a sample analysis</h2>
+  <p>To see one of the analyses from the paper (e.g. the case explored in Fig. 8 and Fig. 9),</p>
+  <pre><code>cp -r data/cache-cloud-disk-oct12-oct16 etc/tmp/cache/demo</code></pre>
+  <p>then,</p>
+  <pre><code>cd code
+  make celerystart &amp;
+  make serverstart &amp;</code></pre>
+  <p>and open a browser window to</p>
+  <code>http://localhost:8000/</code>
+</div>
+
+</body>
+</html>

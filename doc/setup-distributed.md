@@ -18,4 +18,4 @@ celeryd --broker=amqp://guest:guest@HOST// --config=celeryconfig
 
 where guest:guest is the username:password for the master node's rabbitmq broker, and HOST is the hostname/IP of the master node.
 
-Now, when tasks are run from the UI they will be distributed across workers that are not busy. Saving and 
+Now, when tasks are run from the UI they will be distributed across workers that are not busy. Saving and loading will be coordinated across all workers only if the shared directory is configured properly.

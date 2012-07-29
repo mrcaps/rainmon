@@ -1,0 +1,32 @@
+html, body {
+	font-family: 'Ubuntu', sans-serif;
+}
+
+.fixednav {
+	margin-left: 5px;
+	margin-right: 5px;
+}
+.fixednav>div {
+
+}
+.navtitle {
+	font-weight: bold;
+	font-size: 1.2em;
+	border-bottom: 2px solid #C3E8F8;
+}
+.sub {
+	margin-left: 20px;
+}
+
+a {
+	color: #2779AA;
+	text-decoration: none;
+}
+a:hover {
+	text-decoration: underline;
+}
+
+figcaption {
+	font-weight: bold;
+	font-size: 0.8em;
+}

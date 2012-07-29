@@ -22,6 +22,7 @@ from django.conf import settings
 
 urlpatterns = patterns('',
     (r'^media/(?P<path>.*)', 'django.views.static.serve', {'document_root': settings.MEDIA_ROOT}),
+    (r'^doc/(?P<path>.*)', 'django.views.static.serve', {'document_root': settings.DOCS_ROOT}),
     (r'^data$', 'ui.rain.views.data'),
     (r'^analyze$', 'ui.rain.views.analyze'),
     (r'^getsavenames$', 'ui.rain.views.getsavenames'),

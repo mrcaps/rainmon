@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="pandoc">
+  <title></title>
+  <!--[if lt IE 9]>
+    <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+  <link href='http://fonts.googleapis.com/css?family=Ubuntu' rel='stylesheet' type='text/css'>
+  <link rel="stylesheet" href="src/styles.css">
+</head>
+<body>
+
+<div class="fixednav" style="position: fixed; left: 0px; top: 15px; width: 150px;">
+  <div class="navtitle">Contents</div>
+  <div><a href="index.html">Welcome</a></div>
+  <div><a href="README.html">Readme</a></div>
+  <div><a href="setup.html">Setup</a></div>
+  <div class="sub"><a href="setup-ubuntu.html">Ubuntu</a></div>
+  <div class="sub"><a href="setup-windows.html">Windows</a></div>
+  <div class="sub"><a href="setup-distributed.html">Distributed</a></div>
+  <div><a href="usage.html">Usage</a></div>
+  <div><a href="datasources.html">Data Sources</a></div>
+  <div class="sub"><a href="datasources-rrd.html">RRD</a></div>
+</div>
+<div style="margin-left: 150px">
+  <h2 id="overview">Overview</h2>
+  <p>This code package contains the source for RainMon. In brief, it is a system for decomposing, summarizing, and predicting timeseries systems timeseries monitoring data. For more detail on the technique, please see the KDD 2012 paper. The description below is a quick guide to some of the key parts of the code.</p>
+  <h2 id="installation">Installation</h2>
+  <p>For a guide on how to install these requirements, please see the <a href="setup.html">Setup Guide</a></p>
+  <p>Base requirements (all Python-based):</p>
+  <ul>
+  <li>Python (tested on 2.7)</li>
+  <li>http://www.python.org/getit/releases/2.7.2/</li>
+  <li>scipy/numpy</li>
+  <li>see http://www.scipy.org/Installing_SciPy</li>
+  <li>If you don't already have these, consider using the Enthought Python distribution: http://www.enthought.com/products/epd.php</li>
+  <li>matplotlib (for producing figures)</li>
+  <li>see http://matplotlib.sourceforge.net/users/installing.html</li>
+  </ul>
+  <p>Required for interface:</p>
+  <ul>
+  <li>Django</li>
+  <li>The database portion is not required (using SQLite is fine)</li>
+  <li>https://docs.djangoproject.com/en/dev/topics/install/?from=olddocs</li>
+  <li>RabbitMQ (though other AMQP brokers compatible with Celery should work)</li>
+  <li>http://www.rabbitmq.com/download.html</li>
+  <li>Note: requires Erlang (the installation will prompt for it)</li>
+  <li>Leave the server running as a daemon</li>
+  <li>Celery and django-celery for distributed task scheduling:</li>
+  <li><code>easy_install celery</code></li>
+  <li><code>easy_install django-celery</code></li>
+  </ul>
+  <h2 id="configuration">Configuration</h2>
+  <h3 id="config.json">config.json</h3>
+  <p>First, copy <code>config.template.json</code> to <code>config.json</code> file in this directory, and edit the following keys:</p>
+  <ul>
+  <li>&quot;rrddir&quot;: &quot;...path to directory with .rrd files&quot;</li>
+  <li>&quot;tsdbhost&quot;: &quot;... host/IP that default timeseries database is located on ...&quot;</li>
+  <li>&quot;tsdbport&quot;: &quot;... port of default timeseries database (4242 for OpenTSDB, 8000 for RRD)&quot;</li>
+  </ul>
+  <p>RainMon currently supports two timeseries databases: OpenTSDB, a scalable distributed database, and an RRD server.</p>
+  <h3 id="opentsdb">OpenTSDB</h3>
+  <p>For detail on how to set up OpenTSDB, please see the OpenTSDB &quot;getting started&quot; guide at http://opentsdb.net/getting-started.html. The Haodop dataset is available only from within the CMU campus network (or on VPN).</p>
+  <h3 id="rrdtool">RRDtool</h3>
+  <p>The <code>rrd</code> folder contains a server for RRDtool-format data.</p>
+  <h2 id="running">Running</h2>
+  <p>First, <code>cd</code> to the <code>code</code> folder.</p>
+  <h3 id="from-the-command-line">From the command line</h3>
+  <p>A simple example of how to only run the analysis pipeline without the UI is located in <code>boot.py</code>. Look inside <code>generate()</code>: it shows what needs to be specified (name to save, nodes, attributes, and time range).</p>
+  <h3 id="running-the-ui">Running the UI</h3>
+  <p>To run the UI:</p>
+  <ul>
+  <li><code>make celerystart</code></li>
+  <li>starts up a task node on the current machine. For the single-node configuration, just run this on the same node as the Django server.</li>
+  <li><code>make serverstart</code></li>
+  <li>starts the Django server</li>
+  </ul>
+  <p>Then, navigate with a web browser to <code>http://localhost:8000/</code>, where <code>localhost</code> is the IP of the machine you ran the make commands from.</p>
+  <h2 id="disclaimer">Disclaimer</h2>
+  <p>This is &quot;research&quot; code - we fully expect that there are bugs.</p>
+  <p>For licensing information that applies to the project, see LICENSE.</p>
+</div>
+
+</body>
+</html>

@@ -4,6 +4,8 @@ These are setup instructions from scratch for an Ubuntu 12.04 single-machine con
 
 ### Required packages
 
+Run the following:
+
 ```
 sudo su
 apt-get install make python-scipy python-matplotlib

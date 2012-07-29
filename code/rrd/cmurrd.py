@@ -14,11 +14,13 @@
 #   without specific prior written permission.
 
 import sys
+import json
 import os
 import time
 import random
 import rrdtool
 import math
+import traceback
 
 importpaths = [os.path.abspath(p) for p in ["../..", "../ganglia"]]
 for path in importpaths:
@@ -112,7 +114,14 @@ class FlatQuery(TSDBQuery):
         return "\n".join(result)
 
 def get_cmu():
-    return FlatQuery("/home/bigubuntu/rrd")
+    configloc = "../config.json"
+    if os.path.exists(configloc):
+        with open(configloc, "r") as fp:
+            rootfolder = json.load(fp)["rrddir"]
+    else:
+        print "WARNING: could not find configuration file " + configloc
+        rootfolder = "/home/bigubuntu/rrd"
+    return FlatQuery(rootfolder)
 
 def test_rrd_fetch():
     data = get_cmu()
