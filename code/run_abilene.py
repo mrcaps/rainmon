@@ -25,6 +25,7 @@ import json
 import os
 import pickle
 import os.path
+from rescache import Cache
 
 import matplotlib.patches as mpatches
 
@@ -61,90 +62,90 @@ class Pipeline:
         return output
 
 class CypressStage:
-	def __init__(self):
-		self.cyp = cypress.Cypress()
+    def __init__(self):
+        self.cyp = cypress.Cypress()
 
-	def run(self, input):
-		step = input['step']
-		output_ts = []
-		for ts in input['data']:
-			output_ts.append(self.cyp.transform(ts, step))
-			output_ts[-1].append(ts)
-		output = {}
-		output['mint'] = input['mint']
-		output['maxt'] = input['maxt']
-		output['step'] = input['step']
-		output['tsample'] = input['tsample']
-		output['ts_names'] = input['ts_names']
-		output['data'] = output_ts
-		return output
+    def run(self, input):
+        step = input['step']
+        output_ts = []
+        for ts in input['data']:
+            output_ts.append(self.cyp.transform(ts, step))
+            output_ts[-1].append(ts)
+        output = {}
+        output['mint'] = input['mint']
+        output['maxt'] = input['maxt']
+        output['step'] = input['step']
+        output['tsample'] = input['tsample']
+        output['ts_names'] = input['ts_names']
+        output['data'] = output_ts
+        return output
 
 class SpiritStage:
-	def __init__(self, ispca=True,thresh=0.05,startm=3,ebounds=(0.9995, 1),vlambda=0.99,pcafixk=False):
-		self.ispca = ispca
-		self.thresh = thresh
-		self.startm = startm
-		self.ebounds = ebounds
-		self.vlambda = vlambda
-		self.pcafixk = pcafixk
+    def __init__(self, ispca=True,thresh=0.05,startm=3,ebounds=(0.9995, 1),vlambda=0.99,pcafixk=False):
+        self.ispca = ispca
+        self.thresh = thresh
+        self.startm = startm
+        self.ebounds = ebounds
+        self.vlambda = vlambda
+        self.pcafixk = pcafixk
 
-	def run(self, input):
-		dmat = input["data"]
+    def run(self, input):
+        dmat = input["data"]
 
-		if self.ispca:
-			#lower -> retain more energy
-			alg = spirit.PCA(self.thresh)
-			if self.pcafixk:
-				alg.setfixk(self.pcafixk)
-		else:
-			alg = spirit.Spirit(dmat.shape[1], self.startm, self.ebounds, self.vlambda)
-		alg.run(dmat, True)
+        if self.ispca:
+            #lower -> retain more energy
+            alg = spirit.PCA(self.thresh)
+            if self.pcafixk:
+                alg.setfixk(self.pcafixk)
+        else:
+            alg = spirit.Spirit(dmat.shape[1], self.startm, self.ebounds, self.vlambda)
+        alg.run(dmat, True)
 
-		output = input
-		#time history of hidden variables
-		output["hvlog"] = alg.gethvlog().T
-		#time history of SPIRIT reconstructions
-		output["reconlog"] = alg.getreclog()
-		#final SPIRIT projection matrix
-		output["projection"] = alg.W
-		#number of hidden variables at each time tick
-		mlog = alg.getmlog()
-		output["mlog"] = mlog
-		#maximum number of hidden variables
-		output["maxhvs"] = int(max(mlog))
-		#minimum number of hidden variables
-		output["minhvs"] = int(min(mlog))
+        output = input
+        #time history of hidden variables
+        output["hvlog"] = alg.gethvlog().T
+        #time history of SPIRIT reconstructions
+        output["reconlog"] = alg.getreclog()
+        #final SPIRIT projection matrix
+        output["projection"] = alg.W
+        #number of hidden variables at each time tick
+        mlog = alg.getmlog()
+        output["mlog"] = mlog
+        #maximum number of hidden variables
+        output["maxhvs"] = int(max(mlog))
+        #minimum number of hidden variables
+        output["minhvs"] = int(min(mlog))
 
-		return input
+        return input
 
 class KalmanStage:
-	def run(self,input):
+    def run(self,input):
 
-		data = input["hvlog"]
-		max_ind = numpy.max(input["mlog"])
-		data = data[0:max_ind,:]
-		data = data.transpose()
-		N,M = data.shape
-		H = numpy.max(numpy.array([2,numpy.ceil(M/3)]))
+        data = input["hvlog"]
+        max_ind = numpy.max(input["mlog"])
+        data = data[0:max_ind,:]
+        data = data.transpose()
+        N,M = data.shape
+        H = numpy.max(numpy.array([2,numpy.ceil(M/3)]))
 
-		T = 50
-		maxIter = 20
-		step_size = 10
+        T = 50
+        maxIter = 20
+        step_size = 10
 
-		A = numpy.eye(H, H)
-		C = numpy.eye(M, H)
-		Q = numpy.eye(H, H)
-		R = numpy.eye(M, M)
-		mu0 = numpy.random.randn(1,H)
-		Q0 = Q
-		model = kalman.lds_model(A,C,Q,R,mu0,Q0)
-		z_hat,y_hat = kalman.learn_lds(model,data,T,H,step_size,maxIter)
+        A = numpy.eye(H, H)
+        C = numpy.eye(M, H)
+        Q = numpy.eye(H, H)
+        R = numpy.eye(M, M)
+        mu0 = numpy.random.randn(1,H)
+        Q0 = Q
+        model = kalman.lds_model(A,C,Q,R,mu0,Q0)
+        z_hat,y_hat = kalman.learn_lds(model,data,T,H,step_size,maxIter)
 
-		output = input
-		output["predict"] = y_hat.transpose()
-		output["smooth"] = z_hat.transpose()
+        output = input
+        output["predict"] = y_hat.transpose()
+        output["smooth"] = z_hat.transpose()
 
-		return input
+        return input
 
 class DrawStage:
     def __init__(self, outdir, fixymax):
@@ -198,80 +199,101 @@ class DrawStage:
         return input
 
 def get_default_pipeline():
-	cypress = CypressStage()
-	spirit = SpiritStage(ispca=False,thresh=0.01,ebounds=(0.96,1.1),startm=3)
-	kalman = KalmanStage()
-	pipeline = Pipeline()
-	draw = DrawStage('../etc/tmp/abilene', False)
-	#pipeline.append_stage(cypress)
-	pipeline.append_stage(spirit)
-	#pipeline.append_stage(kalman)
-	#pipeline.append_stage(draw)
-	return pipeline
+    cypress = CypressStage()
+    spirit = SpiritStage(ispca=False,thresh=0.01,ebounds=(0.96,1.1),startm=3)
+    kalman = KalmanStage()
+    pipeline = Pipeline()
+    draw = DrawStage('../etc/tmp/abilene', False)
+    #pipeline.append_stage(cypress)
+    pipeline.append_stage(spirit)
+    #pipeline.append_stage(kalman)
+    #pipeline.append_stage(draw)
+    return pipeline
 
 if __name__ == '__main__':
-	import matplotlib
-	matplotlib.rcParams.update({"font.size": 18})
+    import matplotlib
+    matplotlib.rcParams.update({"font.size": 18})
 
-	pipeline = get_default_pipeline()
-	input = {}
-	input['data'] = []
+    pipeline = get_default_pipeline()
+    input = {}
+    input['data'] = []
 
-	name = '../data/abilene-distro/Abilene.mat'
-	data = scipy.io.loadmat(name)
-	odnames = data['odnames']
-	X = data['X2']
-	X = numpy.log10(X+1)
-	num_points, num_nodes = X.shape
-	for i in numpy.arange(num_nodes):
-		X[:,i] = X[:,i] - numpy.mean(X[:,i])
-		X[:,i] = X[:,i]/numpy.sqrt(numpy.sum(X[:,i]**2))
-	
-	timestamp = data['utc2']
-	input['data'] = X
-	pipeline.run(input)
-	W = input['projection']
-	num_hvs = input['maxhvs']
-	index = 0
+    name = '../data/abilene-distro/Abilene.mat'
+    data = scipy.io.loadmat(name)
+    odnames = data['odnames']
+    X = data['X2']
+    X = numpy.log10(X+1)
+    num_points, num_nodes = X.shape
+    for i in numpy.arange(num_nodes):
+        X[:,i] = X[:,i] - numpy.mean(X[:,i])
+        X[:,i] = X[:,i]/numpy.sqrt(numpy.sum(X[:,i]**2))
+    
+    timestamp = [t[0] for t in data['utc2']]
+    input['data'] = X
 
-	#plot all timeseries
-	#for i in numpy.arange(num_nodes):
-	#	pylab.clf()
-	#	pylab.plot(numpy.arange(X[:,i].size)+1,X[:,i])
-	# 	pylab.title("Plot of node flow " + str(i))
-	# 	pylab.savefig(os.path.join('../etc/tmp/abilene_scatter',str(i)+".png"))
+    tsnames = []
+    for n in data['odnames']:
+        narr = str(n[0][0]).split("-")
+        tsnames.append(narr[1] + "." + narr[0])
 
-	fig = pylab.figure()
-	fig.subplots_adjust(left=0.15)
-	ax = fig.add_subplot(111)
-	MSIZE = 7
-	ax.plot(W[:,0],W[:,1],"go",markersize=MSIZE)
-	c = mpatches.Circle((-0.03, -0.03), 0.025, color="y", ec="r", lw=3)
-	ax.add_patch(c)
-	pylab.xlabel('$W_{:,1}$')
-	pylab.ylabel('$W_{:,2}$')
-	ax.annotate("Router IPLS",
+    output = pipeline.run(input)
+
+    W = input['projection']
+    num_hvs = input['maxhvs']
+    index = 0
+
+    output['ts_names'] = tsnames
+    output['tsample'] = timestamp
+    output['mint'] = min(timestamp)
+    output['maxt'] = max(timestamp)
+    output['step'] = (max(timestamp) - min(timestamp)) / len(output['data'][0])
+    dumpoutput = [[[],[],[],darr] for darr in output['data'].T]
+    origoutput = output['data']
+    output['data'] = dumpoutput
+    outdir = "../etc/tmp/cache/abilene"
+    cache = Cache(outdir)
+    cache.write(output)
+
+    output['data'] = origoutput
+
+    #plot all timeseries
+    #for i in numpy.arange(num_nodes):
+    #    pylab.clf()
+    #    pylab.plot(numpy.arange(X[:,i].size)+1,X[:,i])
+    #     pylab.title("Plot of node flow " + str(i))
+    #     pylab.savefig(os.path.join('../etc/tmp/abilene_scatter',str(i)+".png"))
+
+    fig = pylab.figure()
+    fig.subplots_adjust(left=0.15)
+    ax = fig.add_subplot(111)
+    MSIZE = 7
+    ax.plot(W[:,0],W[:,1],"go",markersize=MSIZE)
+    c = mpatches.Circle((-0.03, -0.03), 0.025, color="y", ec="r", lw=3)
+    ax.add_patch(c)
+    pylab.xlabel('$W_{:,1}$')
+    pylab.ylabel('$W_{:,2}$')
+    ax.annotate("Router IPLS",
             xy=(-0.04, -0.05), xycoords='data',
             xytext=(-0.05, -0.3), textcoords='data',
             arrowprops=dict(arrowstyle="->",
                             connectionstyle="arc3"),
             )
-	pylab.savefig('abilene_scatter.pdf')
-	pylab.savefig('abilene_scatter.eps')
+    pylab.savefig('abilene_scatter.pdf')
+    pylab.savefig('abilene_scatter.eps')
 
-	pylab.clf()
-	fig.subplots_adjust(left=0.15)
-	pylab.plot(numpy.arange(X[:,0].size)+1,X[:,44:55])
-	pylab.xlim((0,num_points))
-	pylab.xlabel("Time (tick)")
-	pylab.ylabel("Normalized Packets (count)")
-	pylab.savefig('abilene_anomaly.pdf')
-	pylab.savefig('abilene_anomaly.eps')
+    pylab.clf()
+    fig.subplots_adjust(left=0.15)
+    pylab.plot(numpy.arange(X[:,0].size)+1,X[:,44:55])
+    pylab.xlim((0,num_points))
+    pylab.xlabel("Time (tick)")
+    pylab.ylabel("Normalized Packets (count)")
+    pylab.savefig('abilene_anomaly.pdf')
+    pylab.savefig('abilene_anomaly.eps')
 
-	# for i in numpy.arange(num_hvs):
-	# 	for j in numpy.arange(i+1,num_hvs):
-	# 		pylab.clf()
-	# 		pylab.scatter(W[:,i],W[:,j])
-	# 		pylab.title("Scatter Plot of " + str(i)+" and "+str(j))
-	# 		pylab.savefig(os.path.join('../etc/tmp/abilene_scatter',str(index)+".png"))
-	# 		index += 1
+    # for i in numpy.arange(num_hvs):
+    #     for j in numpy.arange(i+1,num_hvs):
+    #         pylab.clf()
+    #         pylab.scatter(W[:,i],W[:,j])
+    #         pylab.title("Scatter Plot of " + str(i)+" and "+str(j))
+    #         pylab.savefig(os.path.join('../etc/tmp/abilene_scatter',str(index)+".png"))
+    #         index += 1
