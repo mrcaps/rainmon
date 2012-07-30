@@ -14,3 +14,4 @@ These are setup instructions from scratch for a Windows 7 single-machine configu
  * Install RabbitMQ: http://www.rabbitmq.com/download.html (requires Erlang)
  * You will need `make`. Installing Python(x,y) above will install this for you.
  * `easy_install celery django-celery`
+     * If celery has trouble building (e.g. not finding `vcvarsall.bat`, trying an earlier version may help, like `easy_install celery==2.5.5`)
