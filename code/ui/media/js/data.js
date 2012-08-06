@@ -50,7 +50,9 @@ function BoundData(savename, ids) {
 BoundData.prototype.pull = function(tmin, tmax, next) {
     this.series = [];
     var self = this;
-    $.each(self.ids, function(i, id) {
+
+    var nloaded = 0;
+    $.each(self.ids, function(sdx, id) {
         var rparams;
         $.getJSON("data", rparams = {
             savename: self.savename,
@@ -68,11 +70,12 @@ BoundData.prototype.pull = function(tmin, tmax, next) {
                     dta[i][1] = "NaN";
                 }
             }
-            self.series[i] = {
+            self.series[sdx] = {
                 data: dta,
                 label: id.node + " " + id.metric
             };
-            if (self.series.length == self.ids.length) {
+            ++nloaded;
+            if (nloaded == self.ids.length) {
                 next();
             }
         });
