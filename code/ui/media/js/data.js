@@ -68,10 +68,10 @@ BoundData.prototype.pull = function(tmin, tmax, next) {
                     dta[i][1] = "NaN";
                 }
             }
-            self.series.push({
+            self.series[i] = {
                 data: dta,
                 label: id.node + " " + id.metric
-            });
+            };
             if (self.series.length == self.ids.length) {
                 next();
             }
