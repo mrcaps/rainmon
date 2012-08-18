@@ -37,7 +37,7 @@ class Handler(BaseHTTPServer.BaseHTTPRequestHandler):
             for qsp in qsparts:
                 parts = qsp.split("=")
                 request.GET[parts[0]] = "=".join(parts[1:])
-            res = DATA.fetch(request)
+            res = self.server.get_data().fetch(request)
         else:
             res = "Unknown path:" + self.path
 
@@ -46,16 +46,23 @@ class Handler(BaseHTTPServer.BaseHTTPRequestHandler):
         self.wfile.write(res)
 
 HandlerClass = Handler #SimpleHTTPRequestHandler
-ServerClass = BaseHTTPServer.HTTPServer
-Protocol = "HTTP/1.0"
-HandlerClass.protocol_version = Protocol
+HandlerClass.protocol_version = "HTTP/1.0"
 
-if __name__ == '__main__':
-    httpd = ServerClass(("0.0.0.0",8124), HandlerClass)
+class DataServer(BaseHTTPServer.HTTPServer):
+    def __init__(self, server_address, dataloc):
+        BaseHTTPServer.HTTPServer.__init__(self, server_address, HandlerClass)
+        self.dataloc = dataloc
+
+    def get_data(self):
+        return self.dataloc
+
+def start_rrdserve(dataloc,ip="0.0.0.0",port=8124):
+    httpd = DataServer((ip,port), dataloc)
     #Try me with 
     #http://<ip>:8000
     #/q?start=2011/12/11-8:30:00&end=2012/01/20-8:30:00&m=sum:median{host=LocalMachine}
     print "Serving on ", httpd.socket.getsockname()
-
-    DATA = get_cmu()
     httpd.serve_forever()
+
+if __name__ == '__main__':
+    start_rrdserve(get_cmu())

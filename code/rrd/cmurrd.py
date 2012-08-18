@@ -35,10 +35,11 @@ class FlatQuery(TSDBQuery):
     #get raw data from RRD
     def rrd_fetch(self, filename, start, end, step=10):
         try:
-            ret = rrdtool.fetch(os.path.join(self.rrdroot,filename), "AVERAGE",
+            ret = rrdtool.fetch(str(os.path.join(self.rrdroot,filename)), "AVERAGE",
                 "--start", str(start), "--end", str(end), "--r", str(step))
         except:
             print "Error", sys.exc_info()
+            traceback.print_exc()
             ret = ((0,0,0),[],[])
         return ret
     

@@ -19,6 +19,8 @@
 import pipeline
 from rescache import Cache
 from preprocess import *
+import traceback
+import sys
 
 #Normalization of only high bound originally used when analyzing CMU.net data
 class HighValNormalize(Transform):
@@ -54,7 +56,29 @@ def get_default_pipeline(host="127.0.0.1",port="8124"):
     return pipe
     
 if __name__ == "__main__":
-    pipe = get_default_pipeline(host="172.19.149.159")
+    t = None
+
+    try:
+        import rrdtool
+        from threading import Thread
+        import time
+        sys.path.append(os.path.abspath("rrd"))
+        sys.path.append(os.path.abspath("ganglia"))
+        from cmuserver import start_rrdserve
+        from cmurrd import get_cmu
+
+        def startserver(name,*args):
+            #start the RRD server
+            start_rrdserve(get_cmu())
+        t = Thread(None, startserver, None, ("Server",None))
+        t.start()
+
+        pipe = get_default_pipeline(host="127.0.0.1")
+    except:
+        traceback.print_exc()
+        #note: if RRDtool is not available on this machine this can be pointed to a remote host
+        pipe = get_default_pipeline(host="172.19.149.159")
+
     input = dict()
     input["hosts"] = ["CMU-West", "LocalMachine", "NewYork", "PSU", "QatarExternal", "Qatar"]
     input["start"] = "2011/12/28-15:00:00"
@@ -63,3 +87,6 @@ if __name__ == "__main__":
     output = pipe.run(input)
     cache = Cache("../etc/tmp/cache/cmu-dot-net")
     cache.write(output)
+
+    if t is not None:
+        t.join()

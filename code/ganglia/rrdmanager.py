@@ -22,7 +22,7 @@
 # Description:
 #########################################################################
 import time
-from rrd import RRDWrapper
+from rrdwrapper import RRDWrapper
 
 class RRDManager:
     def __init__(self, rootdir):
