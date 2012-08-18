@@ -405,7 +405,7 @@ class CypressStage:
         output_ts = []
         for ts in input['data']:
             if self.skipstage:
-                output_ts.append([ts,0,0])
+                output_ts.append([ts,[0]*len(ts),[0]*len(ts)])
             else:
                 if self.add_lofhof:
                     output_ts.append(self.cyp.transform(ts, step))
