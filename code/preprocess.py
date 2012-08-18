@@ -142,6 +142,7 @@ spiky = [ \
     "proc.stat.cpu.type.iowait"]
 #net.sockstat.num_sockets.type.tcp is just strange.
 
+OrigNormalTransform = NormalTransform
 NormalTransform = LinearNormalize
 BurstyTransform = LogTransform
 

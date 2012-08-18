@@ -14,6 +14,7 @@
 #   without specific prior written permission.
 
 # run_abilene.py
+"""Run analysis on Abilene data from KDD'12 paper"""
 
 import numpy
 import scipy

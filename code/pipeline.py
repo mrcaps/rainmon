@@ -727,6 +727,11 @@ class KalmanStage:
 class DrawStage:
     def __init__(self, outdir, fixymax):
         self.outdir = outdir
+        if not os.path.exists(self.outdir):
+            try:
+                os.makedirs(self.outdir)
+            except:
+                pass
         self.fixymax = fixymax
 
     def run(self, input):
