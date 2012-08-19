@@ -57,23 +57,27 @@ def get_default_pipeline(host="127.0.0.1",port="8124"):
     
 if __name__ == "__main__":
     t = None
+    serverref = dict()
 
     try:
         import rrdtool
         from threading import Thread
         import time
+        import commands
         sys.path.append(os.path.abspath("rrd"))
         sys.path.append(os.path.abspath("ganglia"))
         from cmuserver import start_rrdserve
         from cmurrd import get_cmu
 
-        def startserver(name,*args):
+        def startserver(serverref,*args):
             #start the RRD server
-            start_rrdserve(get_cmu())
-        t = Thread(None, startserver, None, ("Server",None))
+            start_rrdserve(get_cmu(),serverref=serverref)
+        t = Thread(None, startserver, "Server", (serverref,None))
         t.start()
 
-        pipe = get_default_pipeline(host="127.0.0.1")
+        #potentially flaky. Won't work on Windows, but neither will rrdtool at the moment
+        myip = commands.getoutput("ifconfig").split("\n")[1].split()[1].split(":")[1]
+        pipe = get_default_pipeline(host=myip)
     except:
         traceback.print_exc()
         #note: if RRDtool is not available on this machine this can be pointed to a remote host
@@ -88,5 +92,7 @@ if __name__ == "__main__":
     cache = Cache("../etc/tmp/cache/cmu-dot-net")
     cache.write(output)
 
-    if t is not None:
-        t.join()
+    server = serverref["server"]
+    if server is not None:
+        server.shutdown()
+    sys.exit(1)

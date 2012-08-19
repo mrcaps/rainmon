@@ -56,8 +56,10 @@ class DataServer(BaseHTTPServer.HTTPServer):
     def get_data(self):
         return self.dataloc
 
-def start_rrdserve(dataloc,ip="0.0.0.0",port=8124):
+def start_rrdserve(dataloc,ip="0.0.0.0",port=8124,serverref=None):
     httpd = DataServer((ip,port), dataloc)
+    if serverref is not None:
+        serverref["server"] = httpd
     #Try me with 
     #http://<ip>:8000
     #/q?start=2011/12/11-8:30:00&end=2012/01/20-8:30:00&m=sum:median{host=LocalMachine}
