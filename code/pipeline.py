@@ -37,6 +37,7 @@ import cPickle
 import time
 import math
 import os.path
+import traceback
 
 from preprocess import transforms, getmetrics
 from analysis import *
@@ -165,6 +166,7 @@ class OpenTSDBCrawlStage:
         sys.stderr.write("%d %d\n"%(start_time, end_time))
         f = urllib.urlopen(url)
         try:
+            #... over lines in the server response...
             for l in f:
                 items = l.split()
                 name = ""
@@ -182,6 +184,7 @@ class OpenTSDBCrawlStage:
                     hosts[name][1].append(val)
         except:
             print "parse error: %s"%(url)
+            traceback.print_exc()
         f.close()
         return hosts
 

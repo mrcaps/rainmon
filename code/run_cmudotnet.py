@@ -19,6 +19,8 @@
 import pipeline
 from rescache import Cache
 from preprocess import *
+import traceback
+import sys
 
 #Normalization of only high bound originally used when analyzing CMU.net data
 class HighValNormalize(Transform):
@@ -54,7 +56,33 @@ def get_default_pipeline(host="127.0.0.1",port="8124"):
     return pipe
     
 if __name__ == "__main__":
-    pipe = get_default_pipeline(host="172.19.149.159")
+    t = None
+    serverref = dict()
+
+    try:
+        import rrdtool
+        from threading import Thread
+        import time
+        import commands
+        sys.path.append(os.path.abspath("rrd"))
+        sys.path.append(os.path.abspath("ganglia"))
+        from cmuserver import start_rrdserve
+        from cmurrd import get_cmu
+
+        def startserver(serverref,*args):
+            #start the RRD server
+            start_rrdserve(get_cmu(),serverref=serverref)
+        t = Thread(None, startserver, "Server", (serverref,None))
+        t.start()
+
+        #potentially flaky. Won't work on Windows, but neither will rrdtool at the moment
+        myip = commands.getoutput("ifconfig").split("\n")[1].split()[1].split(":")[1]
+        pipe = get_default_pipeline(host=myip)
+    except:
+        traceback.print_exc()
+        #note: if RRDtool is not available on this machine this can be pointed to a remote host
+        pipe = get_default_pipeline(host="172.19.149.159")
+
     input = dict()
     input["hosts"] = ["CMU-West", "LocalMachine", "NewYork", "PSU", "QatarExternal", "Qatar"]
     input["start"] = "2011/12/28-15:00:00"
@@ -63,3 +91,8 @@ if __name__ == "__main__":
     output = pipe.run(input)
     cache = Cache("../etc/tmp/cache/cmu-dot-net")
     cache.write(output)
+
+    server = serverref["server"]
+    if server is not None:
+        server.shutdown()
+    sys.exit(1)
