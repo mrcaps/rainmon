@@ -79,7 +79,7 @@ Res.prototype.get = function(name,next) {
  * List available save files
  */
 Res.getSaves = function(next) {
-	$.getJSON("getsavenames", {savename:self.savename}, 
+	$.getJSON("getsaveinfo", {}, 
 	function(dta) {
 		next(dta);
 	});

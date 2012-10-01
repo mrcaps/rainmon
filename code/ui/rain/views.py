@@ -101,8 +101,8 @@ def analyze(request):
 
     return HttpResponse(json.dumps({"message": "running"}))
 
-def getsavenames(request):
-    t = tasks.get_savenames.delay()
+def getsaveinfo(request):
+    t = tasks.get_saveinfo.delay()
     result = t.get()
     return HttpResponse(json.dumps(result))    
 

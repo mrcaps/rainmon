@@ -108,21 +108,45 @@ def run_pipeline(outname, machines, attributes, startt, endt, \
     
     if output != None:
         dump.write(output, input)
+
+    set_savemeta({
+        "lastsave": outname
+    })
     
     print "Analysis Done"
 
     return "Done"
 
+def getmetaname():
+    root = getcachedir("")
+    return os.path.join(root, "meta.json")
+
 @task()
-def get_savenames():
+def get_saveinfo():
+    """Get save metadata and a list of saves."""
     root = getcachedir("")
     saves = []
+    #metadata about all saves
+    meta = dict()
     if os.path.exists(root):
         for d in os.listdir(root):
             abspath = os.path.join(root,d)
             if os.path.isdir(abspath):
                 saves.append(d)
-    return saves
+        metaname = getmetaname()
+        if os.path.exists(metaname):
+            with open(metaname, "r") as fp:
+                meta = json.load(fp)
+    return {
+        "saves": saves,
+        "meta": meta
+    }
+
+@task()
+def set_savemeta(data):
+    """Set save metadata."""
+    with open(getmetaname(), "w") as fp:
+        json.dump(data, fp)
 
 @task()
 def get_status(savename):
