@@ -59,7 +59,7 @@ def add(x, y):
 #@param skipstages a list of stages to skip (e.g. pipeline.KalmanStage)
 @task()
 def run_pipeline(outname, machines, attributes, startt, endt, \
-    tstep=None, tsdbhost=None, tsdbport=None, skipstages=None):
+    tstep=None, sourcename=None, tsdbhost=None, tsdbport=None, skipstages=None):
     print ">>>Running pipeline on ", machines, attributes
     print ">>>In time range", startt, endt
     print ">>>Skipping stages", skipstages
@@ -79,11 +79,13 @@ def run_pipeline(outname, machines, attributes, startt, endt, \
     input['metrics'] = attributes
     input['start'] = startt #'2011/11/01-00:00:00'
     input['end'] = endt #'2011/11/01-23:30:00'
-    if tsdbhost != None:
+    if sourcename is not None:
+        input['sourcename'] = sourcename
+    if tsdbhost is not None:
         input['tsdbhost'] = tsdbhost
-    if tsdbport != None:
+    if tsdbport is not None:
         input['tsdbport'] = tsdbport
-    if tstep != None:
+    if tstep is not None:
         input['tstep'] = tstep
     print "Starting with input", input
 
@@ -104,7 +106,7 @@ def run_pipeline(outname, machines, attributes, startt, endt, \
     #print "Got output: ", output.keys()
     
     if output != None:
-        dump.write(output)
+        dump.write(output, input)
     
     print "Analysis Done"
 

@@ -86,24 +86,28 @@ class Cache:
                 res = json.load(fp)
                 return res
 
-    def write(self, output):
+    def write(self, output, pipein=None):
         '''
         cache pipeline output {output}
+        optionally also save the pipeline input {pipein}
         '''
 
         def normname(n):
             return n.replace("/","_")
         tsnames = [normname(n) for n in output["ts_names"]]
         hvs = output["hvlog"]
-        if hvs == None:
+        if hvs is None:
             hvs = []
+        if pipein is None:
+            pipein = dict()
 
         self.dump("index", {
             "mint": output["mint"],
             "maxt": output["maxt"],
             "step": output["step"],
             "ts_names": tsnames, 
-            "hiddenvars": len(hvs)
+            "hiddenvars": len(hvs),
+            "pipein": pipein
         })
         self.dump("tsample", list(output["tsample"]))
 

@@ -237,6 +237,7 @@ Exec.analyze = function() {
         machines: JSON.stringify(machines),
         tmin: JSON.stringify($("#timerange-start").val()),
         tmax: JSON.stringify($("#timerange-end").val()),
+        sourcename: Selector.source.name,
         tsdbhost: Selector.source.host,
         tsdbport: Selector.source.port,
         cloudifyNames: Selector.source.cloudifyNames,
