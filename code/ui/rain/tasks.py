@@ -61,7 +61,8 @@ def add(x, y):
 def run_pipeline(outname, machines, attributes, startt, endt, \
     tstep=None, sourcename=None, tsdbhost=None, tsdbport=None, skipstages=None):
     print ">>>Running pipeline on ", machines, attributes
-    print ">>>In time range", startt, endt
+    print ">>>In time range", startt, endt, tstep
+    print ">>>Source", sourcename, str(tsdbhost) + ":" + str(tsdbport)
     print ">>>Skipping stages", skipstages
     print ">>>Saving to", outname
 

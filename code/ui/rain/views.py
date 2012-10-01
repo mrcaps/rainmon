@@ -67,6 +67,9 @@ def analyze(request):
     attributes = json.loads(request.GET['attributes'])
     tmin = json.loads(request.GET['tmin']).encode('ascii', 'ignore')
     tmax = json.loads(request.GET['tmax']).encode('ascii', 'ignore')
+    sourcename = None
+    if 'sourcename' in request.GET:
+        sourcename = str(request.GET['sourcename'])
     tsdbhost = None
     if 'tsdbhost' in request.GET:
         tsdbhost = str(request.GET['tsdbhost'])
@@ -90,8 +93,9 @@ def analyze(request):
     else:
         skipstages = ["pipeline.KalmanStage","pipeline.DrawStage"]
 
-    result = tasks.run_pipeline.delay(outname, machines, attributes, tmin, tmax, \
-        tstep, tsdbhost, tsdbport, skipstages)
+    result = tasks.run_pipeline.delay(
+        outname=outname, machines=machines, attributes=attributes, startt=tmin, endt=tmax, \
+        tstep=tstep, sourcename=sourcename, tsdbhost=tsdbhost, tsdbport=tsdbport, skipstages=skipstages)
     #don't block on response
     #print result.get()
 
