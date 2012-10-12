@@ -270,6 +270,7 @@ class CachingCrawlStage:
         hasher = hashlib.md5()
         hasher.update(inputser)
         inputhash = hasher.hexdigest()
+        print "Cache >> Checking cache %s" % inputhash
 
         subdir = os.path.join(self.root, inputhash)
         cname = os.path.join(subdir, "input.pkl")
