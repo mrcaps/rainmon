@@ -79,7 +79,6 @@ BoundData.prototype.pull = function(tmin, tmax, next) {
                 next();
             }
         });
-        //console.log("Request params were ", rparams);
     });
 }
 BoundData.cmpfn = function(a,b) {

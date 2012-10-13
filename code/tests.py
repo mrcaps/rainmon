@@ -14,14 +14,15 @@
 #   without specific prior written permission.
 
 import unittest
+import numpy as np
+import shutil
 
 from pipeline import *
 from decompress import Decompressor
 
 from pylab import *
-from analysis import *
-
-import numpy as np
+from analysis import recon_error
+from rescache import Cache
 
 class TestAnalysis(unittest.TestCase):
     def test_reconerror(self):
@@ -42,6 +43,33 @@ def get_compress_input():
     input['metrics'] = ['iostat.disk.read_requests',
                         'iostat.disk.write_requests']
     return input
+
+class TestCache(unittest.TestCase):
+    def setUp(self):
+        cfg = getconfig()
+        self.tmpdir = cfg["tmpdir"][3:]
+        self.cacheloc = os.path.join(self.tmpdir, "cache", "unittest-cache")
+        self.pipe = get_default_pipeline()
+        self.pipe.set_skipstages(["KalmanStage","DrawStage"])
+        output = self.pipe.run(get_compress_input())
+        ca = Cache(self.cacheloc)
+        ca.write(output)
+
+    def test_cache(self):
+        ca = Cache(self.cacheloc)
+        self.assertIsNone(ca.getstatus())
+        content = set(ca.getcontents())
+        for i in xrange(3):
+            self.assertIn("hv.%d" % i, content)
+        for i in xrange(1, 30):
+            for base in [
+                ("cloud%d.iostat.disk.write_requests" % i),
+                ("cloud%d.iostat.disk.read_requests" % i)]:
+                self.assertIn(base + ".spikes", content)
+                self.assertIn(base + ".smooth", content)
+
+    def tearDown(self):
+        shutil.rmtree(self.cacheloc)
 
 class TestCompression(unittest.TestCase):
     def setUp(self):

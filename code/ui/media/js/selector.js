@@ -242,7 +242,7 @@ Selector.initSourceSel = function(sources) {
             "type":"radio",
             "name":"sourcegroup",
             "value":i
-        });
+        }).data("sourcename", source.name);
         inpt.change(function() {
             var sourcename = $(this).val();
             Selector.loadSource(sourcename);
@@ -267,6 +267,22 @@ Selector.initSourceSel = function(sources) {
     });
     $("#sourcessel").append(inner);
 };
+/**
+ * Set which source is selected
+ */
+Selector.setSource = function(sourcename) {
+    var found = false;
+    $("#sourcessel input").each(function(i, el) {
+        var qel = $(el);
+        if (qel.data("sourcename") == sourcename) {
+            qel.click();
+            found = true;
+        }
+    });
+    if (!found) {
+        console.warn("Could not find data source", sourcename);
+    }
+}
 Selector.addinpt = function(cont, id, name) {
     $("<input/>")
         .attr("type","checkbox")
@@ -278,6 +294,9 @@ Selector.addinpt = function(cont, id, name) {
         .attr("for","sel-" + id)
         .appendTo(cont);    
 }
+/**
+ * Initialize node selector
+ */
 Selector.initCompSel = function(compnames) {
     $("#compsel").empty();
     var tbl = $("<table>").appendTo("#compsel");
@@ -304,6 +323,35 @@ Selector.initCompSel = function(compnames) {
             Selector.setAllCheck("compsel", false);
         });
 };
+/**
+ * Set which node names are selected
+ */
+Selector.setCompSel = function(compnames) {
+    $("#compsel table input").each(function(i, el) {
+        var name = $(el).data("name");
+        if ($.inArray(name, compnames) > -1) {
+            $(el).attr("checked", "checked");
+        } else {
+            $(el).removeAttr("checked");
+        }
+        $(el).button("refresh");
+    });
+};
+/**
+ * Set which attribute names are selected
+ */
+Selector.setAttrSel = function(attrnames) {
+    $("#attrsel input").each(function(i, el) {
+        var name = $(el).data("name");
+        if ($.inArray(name, attrnames) > -1) {
+            console.log("set", name);
+            $(el).attr("checked", "checked");
+        } else {
+            $(el).removeAttr("checked");
+        }
+        $(el).button("refresh");
+    });
+}
 Selector.initAttrSel = function(attrnames) {
     var cont = $("#attrsel");
     cont.empty();

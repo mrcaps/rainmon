@@ -1,6 +1,16 @@
 <!DOCTYPE html>
 <head>
     <title>RainMon</title>
+    <script>
+    //thanks to http://blog.patspam.com/2009/the-curse-of-consolelog
+    if (!("console" in window)) {
+        var names = ["log", "debug", "info", "warn", "error", "assert", "dir", "dirxml", "group", "groupEnd", "time", "timeEnd", "count", "trace", "profile", "profileEnd"];
+        window.console = {};
+        for (var i = 0, len = names.length; i < len; ++i) {
+            window.console[names[i]] = function(){};
+        }
+    }
+    </script>
 
     <script src="media/lib/jquery-1.6.2.min.js"></script>
     <script src="media/lib/jquery-ui-1.8.16.custom.min.js"></script>
@@ -350,10 +360,23 @@ $(document).ready(function() {
 
         //metadata
         if (saves.meta.lastsave) {
-            var saveres = new Res(saves.meta.lastname);
+            var saveres = new Res(saves.meta.lastsave);
             saveres.getMeta(function(dta) {
                 //last save result metadata
-                console.log(dta);
+                //load it in to the UI if it exists
+                var pipein = dta.pipein;
+                if (pipein) {
+                    Selector.setSource(pipein.sourcename);
+                    $("#timerange-start").attr("value", pipein.start);
+                    $("#timerange-end").attr("value", pipein.end);
+                    Selector.setCompSel(pipein.hosts);
+                    Selector.setAttrSel(pipein.metrics);
+                    if (pipein.step) {
+                        $("#timerange-step").text(pipein.step + "");
+                    }
+                } else {
+                    console.warn("No information about selector state from last save");
+                }
             });
         }
     });

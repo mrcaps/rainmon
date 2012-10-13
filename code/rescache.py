@@ -68,6 +68,8 @@ class Cache:
         '''
         Read the contents of the status file (for checking analysis status)
         '''
+        if not os.path.exists(self.statusloc):
+            return None
         results = []
         with open(self.statusloc,"r") as fp:
             for line in fp:
