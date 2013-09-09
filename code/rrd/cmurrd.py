@@ -18,7 +18,10 @@ import json
 import os
 import time
 import random
-import rrdtool
+try:
+    import rrdtool
+except:
+    import rrdtoolmodule as rrdtool	
 import math
 import traceback
 

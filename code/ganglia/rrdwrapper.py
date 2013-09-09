@@ -17,7 +17,10 @@ import sys
 import os
 import time
 import random
-import rrdtool
+try:
+    import rrdtool
+except:
+    import rrdtoolmodule as rrdtool
 
 class RRDWrapper():
     def create(self, filename, start, step=10):
